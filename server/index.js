@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.resolve("index.html"));
 });
 
-app.use("/static", express.static("app"));
+app.use('/static', express.static(path.join(__dirname, "app")));
 // setup
 
 const PORT = 3000;
