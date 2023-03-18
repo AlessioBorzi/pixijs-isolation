@@ -23,6 +23,7 @@ function interPolate() {
   const t1 = packetsArray[1].timestamp,
     t2 = packetsArray[0].timestamp;
 
+
   if (renderTime <= t2 && renderTime >= t1) {
     // total time from t1 to t2
     const total = t2 - t1,
