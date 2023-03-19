@@ -1,15 +1,15 @@
-/*
- * node.js and socket.io tests
- */
+import express from "npm:express@4.18.2";
+import { resolve } from "https://deno.land/std@0.179.0/path/mod.ts";
+import {
+  WebSocketClient,
+  WebSocketServer,
+} from "https://deno.land/x/websocket@v0.1.4/mod.ts";
 
-const express = require("express");
 const app = express();
-const WebSocket = require("ws");
-const wss = new WebSocket.Server({ port: 3010 });
-const path = require("path");
+const wss = new WebSocketServer(3010);
 
 app.get("/", (req, res) => {
-  res.sendFile(path.resolve("index.html"));
+  res.sendFile(resolve("index.html"));
 });
 
 app.use("/static", express.static("app"));
@@ -18,25 +18,16 @@ app.use("/static", express.static("app"));
 const PORT = 3000;
 const HOST = "127.0.0.1";
 
-//Holds the players inputs
+// Holds the players inputs
 const playersData = {
-  players: {}
-};
-
-// Broadcast to all connections.
-wss.broadcast = data => {
-  wss.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(data);
-    }
-  });
+  players: {},
 };
 
 function getPlayersData() {
   return JSON.stringify({
     type: "update",
     timestamp: Date.now(),
-    data: Array.from(Object.values(playersData.players))
+    data: Array.from(Object.values(playersData.players)),
   });
 }
 
@@ -44,25 +35,30 @@ function createPlayer() {
   const player = {
     id: Math.random().toString(36).substring(7),
     x: 100,
-    y: 100
+    y: 100,
   };
   playersData.players[player.id] = player;
   return player;
 }
 
 setInterval(() => {
-  wss.broadcast(getPlayersData());
+  const data = getPlayersData();
+  for (const client of wss.clients) {
+    client.send(data);
+  }
 }, 100);
 
-wss.on("connection", ws => {
+wss.on("connection", (ws: WebSocketClient) => {
   const player = createPlayer();
   ws.id = player.id;
-  ws.send(JSON.stringify({
-    type: "init",
-    timestamp: Date.now(),
-    data: player
-  }));
-  ws.on("message", data => {
+  ws.send(
+    JSON.stringify({
+      type: "init",
+      timestamp: Date.now(),
+      data: player,
+    })
+  );
+  ws.on("message", (data) => {
     const message = JSON.parse(data);
     switch (message.type) {
       case "input":
