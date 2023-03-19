@@ -13,8 +13,5 @@
   ],
   "author": "tonis",
   "license": "ISC",
-  "dependencies": {
-    "express": "4.18.2",
-    "ws": "^3.0.0"
-  }
+  "dependencies": {}
 }
