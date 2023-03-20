@@ -1,6 +1,6 @@
 # pixi-multiplayer-example
 
-Example how to make multiplayer game with pixi.js, node.js.
+Example how to make multiplayer game with pixi.js, deno.js.
 
 Also uses [client interpolation](https://www.gabrielgambetta.com/entity-interpolation.html) to prevent laggy movement when there are server delays present.
 

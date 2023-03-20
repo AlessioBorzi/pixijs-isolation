@@ -4,8 +4,8 @@
   "description": "testing multiplayer game",
   "main": "index.js",
   "scripts": {
-    "startdev": "nodemon ./server/index.js",
-    "start": "node ./server/index.js"
+    "startdev": "denon run -A ./server/index.ts",
+    "start": "deno run -A ./server/index.ts"
   },
   "keywords": [
     "game",
@@ -13,8 +13,5 @@
   ],
   "author": "tonis",
   "license": "ISC",
-  "dependencies": {
-    "express": "^4.15.3",
-    "ws": "^3.0.0"
-  }
+  "dependencies": {}
 }
