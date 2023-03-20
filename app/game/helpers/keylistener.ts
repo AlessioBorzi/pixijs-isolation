@@ -1,6 +1,8 @@
-import keys from "./keymap.js";
+import keys from './keymap';
 
 export default class ListenKeys {
+  keys;
+
   constructor() {
     this.keys = {};
     this.listenKeys();
@@ -15,11 +17,11 @@ export default class ListenKeys {
   }
 
   listenKeys() {
-    const keysPressed = e => {
+    const keysPressed = (e) => {
       this.keys[keys[e.keyCode]] = true;
     };
 
-    const keysReleased = e => {
+    const keysReleased = (e) => {
       this.keys[keys[e.keyCode]] = false;
     };
 

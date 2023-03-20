@@ -1,4 +1,6 @@
-export default class Socket {
+export class Socket {
+  connection: WebSocket;
+
   constructor() {
     this.connection = new WebSocket(`ws://${window.location.hostname}:3010`);
     this.connection.onerror = this.error.bind(this);

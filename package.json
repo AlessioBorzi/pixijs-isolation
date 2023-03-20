@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "startdev": "denon run -A ./server/index.ts",
-    "start": "deno run -A ./server/index.ts"
+    "start": "deno run -A ./server/index.ts",
+    "webpack": "webpack",
+    "build": "npm run webpack -- --env mode=production"
   },
   "keywords": [
     "game",
@@ -13,5 +15,20 @@
   ],
   "author": "tonis",
   "license": "ISC",
-  "dependencies": {}
+  "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "html-webpack-plugin": "^5.5.0",
+    "prettier": "2.0.4",
+    "ts-loader": "^9.4.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.11.1",
+    "webpack-merge": "^5.8.0"
+  },
+  "dependencies": {
+    "pixi.js": "5.2.1"
+  }
 }

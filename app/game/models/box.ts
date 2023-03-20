@@ -1,10 +1,14 @@
+import { Sprite } from 'pixi.js';
+
 export const BLOCK_DIMENSION = 40;
 
 // The checkboard is made of boxes
 export class Box {
-  constructor(id) {
-    this.sprite = PIXI.Sprite.fromImage("static/images/box.png");
-    this.sprite.id = id; // it is an array [a,b]
+  sprite: Sprite;
+
+  constructor(id: number[]) {
+    this.sprite = Sprite.from('assets/images/box.png');
+    (this.sprite as any).id = id;
     this.sprite.x = 0;
     this.sprite.y = 0;
     this.sprite.height = BLOCK_DIMENSION;
@@ -15,14 +19,12 @@ export class Box {
 }
 
 // Make the box clickable and change color
-export function boxMakeInteractive(box) {
-  box.sprite = PIXI.Sprite.fromImage("static/images/boxInteractive.png");
+export function boxMakeInteractive(box: Box) {
+  box.sprite = Sprite.from('assets/images/boxInteractive.png');
   box.sprite.interactive = true;
   box.sprite.cursor = 'pointer';
-  box.on('pointertap', boxOnClick);
+  box.sprite.on('pointertap', boxOnClick);
 }
 
 // What happens when you click on a box
-export function boxOnClick() {
-
-}
+export function boxOnClick() {}

@@ -1,1 +1,0 @@
-import "./game/index.js";
