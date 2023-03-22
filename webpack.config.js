@@ -1,6 +1,7 @@
 const path = require('path')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require('copy-webpack-plugin')
 
 module.exports = {
@@ -15,6 +16,15 @@ module.exports = {
               test: /\.ts$/,
               use: 'ts-loader',
               exclude: [/node_modules/, '/server/'],
+            },
+            {
+              test: /\.css$/i,
+              use: [
+                  {
+                      loader: MiniCssExtractPlugin.loader,
+                  },
+                  "css-loader",
+              ],
             },
         ],
     },
@@ -56,15 +66,7 @@ module.exports = {
                   },
               },
           ],
-      }),
+        }),
+        new MiniCssExtractPlugin(),
     ],
-    devServer: {
-        // webpack-dev-server configuration
-        contentBase: path.join(__dirname, 'dist'),
-        // keep port in sync with VS Code launch.json
-        port: 3000,
-        // Hot-reloading, the sole reason to use webpack here <3
-        hot: true,
-        writeToDisk: true,
-    },
 }
