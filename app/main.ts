@@ -1,11 +1,10 @@
-import './game/index';
 import './css/style.css';
 
-import { Pawn, pawnOnClick } from './models/pawn';
-import { Box, BLOCK_DIMENSION, PADDING } from './models/box';
+import { Pawn, pawnOnClick } from './game/models/pawn';
+import { Box, BLOCK_DIMENSION, PADDING } from './game/models/box';
 import { Application, Container } from 'pixi.js';
-import KeyListener from './helpers/keylistener';
-import { Socket } from './helpers/sockets';
+import KeyListener from './game/helpers/keylistener';
+import { Socket } from './game/helpers/sockets';
 
 const GAME_WIDTH = 800;
 const GAME_HEIGTH = 600;
@@ -33,7 +32,7 @@ const checkboardWidth = 8;
 for (let j = 0; j < checkboardHeight; j++) {
   boxes.push([]);
   for (let i = 0; i < checkboardWidth; i++) {
-    let box = new Box();
+    const box = new Box();
     box.sprite.x = i * (BLOCK_DIMENSION + PADDING);
     box.sprite.y = j * (BLOCK_DIMENSION + PADDING);
     checkboard.addChild(box.sprite);
@@ -42,10 +41,10 @@ for (let j = 0; j < checkboardHeight; j++) {
 }
 
 // Make the two pawns
-const pawn1 = new Pawn();
-const pawn2 = new Pawn();
+const pawn0 = new Pawn(false);
+const pawn1 = new Pawn(true);
+checkboard.addChild(pawn0.sprite);
 checkboard.addChild(pawn1.sprite);
-checkboard.addChild(pawn2.sprite);
 
 // Move checkerboard to the center
 checkboard.x = app.screen.width / 2;
@@ -56,14 +55,12 @@ checkboard.pivot.y = checkboard.height / 2;
 
 app.stage.addChild(checkboard);
 
+// Client
 
 function sendData() {
-  const currentPlayerStats = getCurrentPlayerSprite(rocketStats.id);
-  currentPlayerStats.x = rocketStats.x;
-  currentPlayerStats.y = rocketStats.y;
   socket.send({
     type: "input",
-    data: rocketStats
+    data: "Hello World" //this is temporary of course
   });
 }
 
@@ -71,11 +68,14 @@ socket.connection.onmessage = signal => {
   const payload = JSON.parse(signal.data);
   switch (payload.type) {
     case "init":
-      rocketStats = payload.data;
-      createPlayer(payload.data);
+      console.log("Hello World")
       break;
     case "update":
-      packetsArray.unshift(payload);
+      console.log("Hello World")
       break;
   }
 };
+
+app.ticker.add((delta) => {
+  
+});

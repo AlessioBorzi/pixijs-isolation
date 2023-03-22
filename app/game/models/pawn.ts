@@ -7,11 +7,11 @@ export class Pawn {
   x: number;
   y: number;
 
-  constructor() {
+  constructor(id: boolean) {
     this.sprite = Sprite.from('assets/images/rocket.png');
 
     // If the paws is of the first player, put it on (0,2), otherwise (7,3)
-    if (id == 0) {
+    if (id) {
       this.x = 0;
       this.y = 2;
     } else {

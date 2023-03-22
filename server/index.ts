@@ -18,12 +18,26 @@ app.use('/', express.static(join(__dirname, '../dist')));
 const PORT = 3000;
 const HOST = '127.0.0.1';
 
-// Holds the players inputs
+// Turn management
+const enum TURN {
+  PLAYER_0 = false,
+  PLAYER_1 = true,
+};
+const enum TURN_PHASE {
+  MOVE_PAWN = false,
+  REMOVE_BOX = true,
+};
+let turn: Turn = TURN.PLAYER_0;
+let turn_phase = TURN_PHASE.MOVE_PAWN;
+
+// Players data
 const players = [];
 
 function createPlayer() {
+  const l = players.length;
   const player = {
-    id: players.length
+    id: l,
+    spectator: (l > 1),
   };
   players.push(player);
   return player;
