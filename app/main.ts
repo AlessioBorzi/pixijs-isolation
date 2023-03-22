@@ -57,25 +57,25 @@ app.stage.addChild(checkboard);
 
 // Client
 
-function sendData() {
+function sendData(): void {
   socket.send({
-    type: "input",
-    data: "Hello World" //this is temporary of course
+    type: 'input',
+    data: 'Hello World', //this is temporary of course
   });
 }
 
-socket.connection.onmessage = signal => {
+socket.connection.onmessage = (signal) => {
   const payload = JSON.parse(signal.data);
   switch (payload.type) {
-    case "init":
-      console.log("Hello World")
+    case 'init':
+      console.log('Hello World');
       break;
-    case "update":
-      console.log("Hello World")
+    case 'update':
+      console.log('Hello World');
+      break;
+    default:
       break;
   }
 };
 
-app.ticker.add((delta) => {
-  
-});
+app.ticker.add((delta) => {});
