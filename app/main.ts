@@ -1,11 +1,10 @@
-import './game/index';
 import './css/style.css';
 
-import { Pawn, pawnOnClick } from './models/pawn';
-import { Box, BLOCK_DIMENSION, PADDING } from './models/box';
+import { Pawn, pawnOnClick } from './game/models/pawn';
+import { Box, BLOCK_DIMENSION, PADDING } from './game/models/box';
 import { Application, Container } from 'pixi.js';
-import KeyListener from './helpers/keylistener';
-import { Socket } from './helpers/sockets';
+import KeyListener from './game/helpers/keylistener';
+import { Socket } from './game/helpers/sockets';
 
 const GAME_WIDTH = 800;
 const GAME_HEIGTH = 600;
@@ -55,27 +54,3 @@ checkboard.pivot.x = checkboard.width / 2;
 checkboard.pivot.y = checkboard.height / 2;
 
 app.stage.addChild(checkboard);
-
-
-function sendData() {
-  const currentPlayerStats = getCurrentPlayerSprite(rocketStats.id);
-  currentPlayerStats.x = rocketStats.x;
-  currentPlayerStats.y = rocketStats.y;
-  socket.send({
-    type: "input",
-    data: rocketStats
-  });
-}
-
-socket.connection.onmessage = signal => {
-  const payload = JSON.parse(signal.data);
-  switch (payload.type) {
-    case "init":
-      rocketStats = payload.data;
-      createPlayer(payload.data);
-      break;
-    case "update":
-      packetsArray.unshift(payload);
-      break;
-  }
-};

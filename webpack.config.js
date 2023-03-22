@@ -6,7 +6,7 @@ const CopyPlugin = require('copy-webpack-plugin')
 
 module.exports = {
     // Basic configuration
-    entry: './app/main.ts',
+    entry: { app: ['./shared/index.ts', './app/main.ts',] },
     // Necessary in order to use source maps and debug directly TypeScript files
     devtool: 'source-map',
     module: {

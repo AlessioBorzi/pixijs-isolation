@@ -11,14 +11,14 @@ export class Pawn {
     this.sprite = Sprite.from('assets/images/rocket.png');
 
     // If the paws is of the first player, put it on (0,2), otherwise (7,3)
-    if (id == 0) {
+    /*     if (id == 0) {
       this.x = 0;
       this.y = 2;
     } else {
       this.x = 7;
       this.y = 3;
     }
-
+ */
     this.sprite.x = this.x * (BLOCK_DIMENSION + PADDING);
     this.sprite.y = this.y * (BLOCK_DIMENSION + PADDING);
     this.sprite.height = BLOCK_DIMENSION;
