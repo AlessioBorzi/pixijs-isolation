@@ -1,11 +1,10 @@
-import './game/index';
 import './css/style.css';
 
-import { Pawn, pawnOnClick } from './models/pawn';
-import { Box, BLOCK_DIMENSION, PADDING } from './models/box';
+import { Pawn, pawnOnClick } from './game/models/pawn';
+import { Box, BLOCK_DIMENSION, PADDING } from './game/models/box';
 import { Application, Container } from 'pixi.js';
-import KeyListener from './helpers/keylistener';
-import { Socket } from './helpers/sockets';
+import KeyListener from './game/helpers/keylistener';
+import { Socket } from './game/helpers/sockets';
 
 const GAME_WIDTH = 800;
 const GAME_HEIGTH = 600;
