@@ -41,10 +41,10 @@ for (let j = 0; j < checkboardHeight; j++) {
 }
 
 // Make the two pawns
+const pawn0 = new Pawn();
 const pawn1 = new Pawn();
-const pawn2 = new Pawn();
+checkboard.addChild(pawn0.sprite);
 checkboard.addChild(pawn1.sprite);
-checkboard.addChild(pawn2.sprite);
 
 // Move checkerboard to the center
 checkboard.x = app.screen.width / 2;
@@ -55,6 +55,8 @@ checkboard.pivot.y = checkboard.height / 2;
 
 app.stage.addChild(checkboard);
 
+
+// Client
 
 function sendData() {
   socket.send({
@@ -74,3 +76,14 @@ socket.connection.onmessage = signal => {
       break;
   }
 };
+
+let flag = false;
+
+app.ticker.add(delta => {
+  flag = !flag;
+  if flag {
+    pawn0.x += 40;
+  } else{
+    pawn0.x -= 40;
+  }
+});
