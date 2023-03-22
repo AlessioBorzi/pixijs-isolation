@@ -55,7 +55,6 @@ checkboard.pivot.y = checkboard.height / 2;
 
 app.stage.addChild(checkboard);
 
-
 // Client
 
 function sendData() {
@@ -77,13 +76,6 @@ socket.connection.onmessage = signal => {
   }
 };
 
-let flag = false;
-
 app.ticker.add((delta) => {
-  flag = !flag;
-  if (flag) {
-    pawn0.x += 40;
-  } else{
-    pawn0.x -= 40;
-  }
+  
 });

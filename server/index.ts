@@ -19,22 +19,22 @@ const PORT = 3000;
 const HOST = '127.0.0.1';
 
 // Turn management
-const enum Turn {
-  TURN_0 = false,
-  TURN_1 = true,
-}
-const enum TurnPhase {
-  TURN_PHASE_0 = false,
-  TURN_PHASE_1 = true,
-}
-let turn: Turn = TURN_0;
-let turn_phase = TURN_PHASE_0;
+const enum TURN {
+  PLAYER_0 = false,
+  PLAYER_1 = true,
+};
+const enum TURN_PHASE {
+  MOVE_PAWN = false,
+  REMOVE_BOX = true,
+};
+let turn: Turn = TURN.PLAYER_0;
+let turn_phase = TURN_PHASE.MOVE_PAWN;
 
 // Players data
 const players = [];
 
 function createPlayer() {
-  const l: number = players.length;
+  const l = players.length;
   const player = {
     id: l,
     spectator: (l > 1),
