@@ -1,14 +1,14 @@
 import { Sprite } from 'pixi.js';
 
 export const BLOCK_DIMENSION = 40;
+export const PADDING = 5;
 
 // The checkboard is made of boxes
 export class Box {
   sprite: Sprite;
 
-  constructor(id: number[]) {
+  constructor() {
     this.sprite = Sprite.from('assets/images/box.png');
-    (this.sprite as any).id = id;
     this.sprite.x = 0;
     this.sprite.y = 0;
     this.sprite.height = BLOCK_DIMENSION;

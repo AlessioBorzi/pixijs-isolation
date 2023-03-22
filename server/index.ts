@@ -19,26 +19,22 @@ const PORT = 3000;
 const HOST = '127.0.0.1';
 
 // Holds the players inputs
-const playersData = {
-  players: {},
-};
+const players = [];
+
+function createPlayer() {
+  const player = {
+    id: players.length
+  };
+  players.push(player);
+  return player;
+}
 
 function getPlayersData() {
   return JSON.stringify({
     type: 'update',
     timestamp: Date.now(),
-    data: Array.from(Object.values(playersData.players)),
+    data: players,
   });
-}
-
-function createPlayer() {
-  const player = {
-    id: Math.random().toString(36).substring(7),
-    x: 100,
-    y: 100,
-  };
-  playersData.players[player.id] = player;
-  return player;
 }
 
 setInterval(() => {
@@ -48,29 +44,30 @@ setInterval(() => {
   }
 }, 100);
 
-wss.on('connection', (ws: WebSocketClient) => {
+function getDataFromClient(data: string) {
+  const message = JSON.parse(data);
+  switch (message.type) {
+    case 'input':
+      players[message.data.id] = message.data;
+      break;
+  }
+}
+
+function onConnection(ws: WebSocketClient) {
   const player = createPlayer();
   ws.id = player.id;
-  ws.send(
-    JSON.stringify({
+  const initMessage: string = JSON.stringify({
       type: 'init',
       timestamp: Date.now(),
       data: player,
-    }),
-  );
-  ws.on('message', (data) => {
-    const message = JSON.parse(data);
-    switch (message.type) {
-      case 'input':
-        playersData.players[message.data.id] = message.data;
-        break;
-    }
   });
+  ws.send(initMessage);
+  ws.on('message', getDataFromClient);
   //Player leaves, delete data from list
-  ws.on('close', () => {
-    delete playersData.players[ws.id];
-  });
-});
+  ws.on('close', () => {delete players[ws.id];});
+}
+
+wss.on('connection', onConnection);
 
 app.listen(PORT);
 

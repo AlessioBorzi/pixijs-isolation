@@ -1,5 +1,5 @@
 import { Sprite } from 'pixi.js';
-import { BLOCK_DIMENSION } from './box';
+import { BLOCK_DIMENSION, PADDING } from './box';
 
 // Class Pawn with its texture, coordinates, dimension
 export class Pawn {
@@ -7,9 +7,8 @@ export class Pawn {
   x: number;
   y: number;
 
-  constructor(id: 0 | 1) {
+  constructor() {
     this.sprite = Sprite.from('assets/images/rocket.png');
-    (this.sprite as any).id = id;
 
     // If the paws is of the first player, put it on (0,2), otherwise (7,3)
     if (id == 0) {
@@ -20,8 +19,8 @@ export class Pawn {
       this.y = 3;
     }
 
-    this.sprite.x = this.x * (BLOCK_DIMENSION + 5);
-    this.sprite.y = this.y * (BLOCK_DIMENSION + 5);
+    this.sprite.x = this.x * (BLOCK_DIMENSION + PADDING);
+    this.sprite.y = this.y * (BLOCK_DIMENSION + PADDING);
     this.sprite.height = BLOCK_DIMENSION;
     this.sprite.width = BLOCK_DIMENSION;
     this.sprite.interactive = true;

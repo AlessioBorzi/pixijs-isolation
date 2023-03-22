@@ -1,17 +1,17 @@
 import { Pawn, pawnOnClick } from './models/pawn';
-import { Box, BLOCK_DIMENSION } from './models/box';
+import { Box, BLOCK_DIMENSION, PADDING } from './models/box';
 import { Application, Container } from 'pixi.js';
 import KeyListener from './helpers/keylistener';
 import { Socket } from './helpers/sockets';
 
-const gameWidth = 800;
-const gameHeight = 600;
+const GAME_WIDTH = 800;
+const GAME_HEIGTH = 600;
 
 // Create the app with a black background
 const app = new Application({
   backgroundColor: 0x000000,
-  width: gameWidth,
-  height: gameHeight,
+  width: GAME_WIDTH,
+  height: GAME_HEIGTH,
 });
 
 document.body.appendChild(app.view);
@@ -30,17 +30,17 @@ const checkboardWidth = 8;
 for (let j = 0; j < checkboardHeight; j++) {
   boxes.push([]);
   for (let i = 0; i < checkboardWidth; i++) {
-    let box = new Box([i, j]);
-    box.sprite.x = i * (BLOCK_DIMENSION + 5);
-    box.sprite.y = j * (BLOCK_DIMENSION + 5);
+    let box = new Box();
+    box.sprite.x = i * (BLOCK_DIMENSION + PADDING);
+    box.sprite.y = j * (BLOCK_DIMENSION + PADDING);
     checkboard.addChild(box.sprite);
     boxes[j].push(box);
   }
 }
 
 // Make the two pawns
-const pawn1 = new Pawn(0);
-const pawn2 = new Pawn(1);
+const pawn1 = new Pawn();
+const pawn2 = new Pawn();
 checkboard.addChild(pawn1.sprite);
 checkboard.addChild(pawn2.sprite);
 
@@ -52,3 +52,27 @@ checkboard.pivot.x = checkboard.width / 2;
 checkboard.pivot.y = checkboard.height / 2;
 
 app.stage.addChild(checkboard);
+
+
+function sendData() {
+  const currentPlayerStats = getCurrentPlayerSprite(rocketStats.id);
+  currentPlayerStats.x = rocketStats.x;
+  currentPlayerStats.y = rocketStats.y;
+  socket.send({
+    type: "input",
+    data: rocketStats
+  });
+}
+
+socket.connection.onmessage = signal => {
+  const payload = JSON.parse(signal.data);
+  switch (payload.type) {
+    case "init":
+      rocketStats = payload.data;
+      createPlayer(payload.data);
+      break;
+    case "update":
+      packetsArray.unshift(payload);
+      break;
+  }
+};
