@@ -4,6 +4,9 @@ import { createPlayer } from '../player/player.ts';
 import { messageType } from '../../shared/message.model.ts';
 import { getInitPlayerMessage, getPlayersDataMessage } from './messages.ts';
 
+// Players data
+const players: Player[] = [];
+
 // Turn management
 const enum TURN {
   PLAYER_0 = false,
@@ -31,7 +34,7 @@ function updatePlayerDataOnInput(data: string): void {
   }
 }
 
-function onConnection(ws: WebSocketClient, players: Player[]): void {
+function onConnection(ws: WebSocketClient): void {
   const player = createPlayer(players.length);
   players.push(player);
 
@@ -50,9 +53,6 @@ function onConnection(ws: WebSocketClient, players: Player[]): void {
 
 export function initSocketConnection(): void {
   const wss = new WebSocketServer(3010);
-
-  // Players data
-  const players: Player[] = [];
 
   setInterval(() => {
     const data = getPlayersDataMessage(players);
