@@ -81,7 +81,7 @@ let flag = false;
 
 app.ticker.add((delta) => {
   flag = !flag;
-  if flag {
+  if (flag) {
     pawn0.x += 40;
   } else{
     pawn0.x -= 40;
