@@ -41,8 +41,8 @@ for (let j = 0; j < checkboardHeight; j++) {
 }
 
 // Make the two pawns
-const pawn0 = new Pawn();
-const pawn1 = new Pawn();
+const pawn0 = new Pawn(false);
+const pawn1 = new Pawn(true);
 checkboard.addChild(pawn0.sprite);
 checkboard.addChild(pawn1.sprite);
 
@@ -79,7 +79,7 @@ socket.connection.onmessage = signal => {
 
 let flag = false;
 
-app.ticker.add(delta => {
+app.ticker.add((delta) => {
   flag = !flag;
   if flag {
     pawn0.x += 40;
