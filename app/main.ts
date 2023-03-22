@@ -32,7 +32,7 @@ const checkboardWidth = 8;
 for (let j = 0; j < checkboardHeight; j++) {
   boxes.push([]);
   for (let i = 0; i < checkboardWidth; i++) {
-    let box = new Box();
+    const box = new Box();
     box.sprite.x = i * (BLOCK_DIMENSION + PADDING);
     box.sprite.y = j * (BLOCK_DIMENSION + PADDING);
     checkboard.addChild(box.sprite);
@@ -41,10 +41,10 @@ for (let j = 0; j < checkboardHeight; j++) {
 }
 
 // Make the two pawns
-const pawn1 = new Pawn();
-const pawn2 = new Pawn();
+const pawn0 = new Pawn(false);
+const pawn1 = new Pawn(true);
+checkboard.addChild(pawn0.sprite);
 checkboard.addChild(pawn1.sprite);
-checkboard.addChild(pawn2.sprite);
 
 // Move checkerboard to the center
 checkboard.x = app.screen.width / 2;
@@ -54,3 +54,28 @@ checkboard.pivot.x = checkboard.width / 2;
 checkboard.pivot.y = checkboard.height / 2;
 
 app.stage.addChild(checkboard);
+
+// Client
+
+function sendData(): void {
+  socket.send({
+    type: 'input',
+    data: 'Hello World', //this is temporary of course
+  });
+}
+
+socket.connection.onmessage = (signal) => {
+  const payload = JSON.parse(signal.data);
+  switch (payload.type) {
+    case 'init':
+      console.log('Hello World');
+      break;
+    case 'update':
+      console.log('Hello World');
+      break;
+    default:
+      break;
+  }
+};
+
+app.ticker.add((delta) => {});

@@ -4,6 +4,18 @@ import { createPlayer } from '../player/player.ts';
 import { messageType } from '../../shared/message.model.ts';
 import { getInitPlayerMessage, getPlayersDataMessage } from './messages.ts';
 
+// Turn management
+const enum TURN {
+  PLAYER_0 = false,
+  PLAYER_1 = true,
+}
+const enum TURN_PHASE {
+  MOVE_PAWN = false,
+  REMOVE_BOX = true,
+}
+let turn: Turn = TURN.PLAYER_0;
+let turn_phase = TURN_PHASE.MOVE_PAWN;
+
 function sendToAllClients(clients, data: string): void {
   for (const client of clients) {
     client.send(data);
@@ -39,7 +51,7 @@ function onConnection(ws: WebSocketClient, players: Player[]): void {
 export function initSocketConnection(): void {
   const wss = new WebSocketServer(3010);
 
-  // Holds the players inputs
+  // Players data
   const players: Player[] = [];
 
   setInterval(() => {
