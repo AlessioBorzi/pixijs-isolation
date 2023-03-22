@@ -32,7 +32,7 @@ const checkboardWidth = 8;
 for (let j = 0; j < checkboardHeight; j++) {
   boxes.push([]);
   for (let i = 0; i < checkboardWidth; i++) {
-    let box = new Box();
+    const box = new Box();
     box.sprite.x = i * (BLOCK_DIMENSION + PADDING);
     box.sprite.y = j * (BLOCK_DIMENSION + PADDING);
     checkboard.addChild(box.sprite);
@@ -57,12 +57,9 @@ app.stage.addChild(checkboard);
 
 
 function sendData() {
-  const currentPlayerStats = getCurrentPlayerSprite(rocketStats.id);
-  currentPlayerStats.x = rocketStats.x;
-  currentPlayerStats.y = rocketStats.y;
   socket.send({
     type: "input",
-    data: rocketStats
+    data: "Hello World" //this is temporary of course
   });
 }
 
@@ -70,11 +67,10 @@ socket.connection.onmessage = signal => {
   const payload = JSON.parse(signal.data);
   switch (payload.type) {
     case "init":
-      rocketStats = payload.data;
-      createPlayer(payload.data);
+      console.log("Hello World")
       break;
     case "update":
-      packetsArray.unshift(payload);
+      console.log("Hello World")
       break;
   }
 };
