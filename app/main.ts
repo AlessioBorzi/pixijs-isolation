@@ -56,6 +56,15 @@ checkboard.pivot.y = checkboard.height / 2;
 
 app.stage.addChild(checkboard);
 
+
+function updatePawnAdjacentBoxes(pawn: Pawn): void {
+  for (let i = 0; i < pawn.adjacent.length; i++) {
+    const l = pawn.adjacent[i];
+    const b = boxes[(l[0])][(l[1])];
+    b.update(pawn.onMove);
+  }
+}
+
 // Client
 
 let idPlayer: number;
@@ -96,10 +105,10 @@ export const TURN_PHASE = {
   REMOVE_BOX : true,
 } as const;
 
-
 app.ticker.add((delta) => {
+  //console.log("idPlayer: " + idPlayer + "\nturn: " + turn + "\nturn_phase: " + turn_phase + "\nisPlayerSpectator: " + isPlayerSpectator)
+
   //Move pawn phase
-  console.log("idPlayer: " + idPlayer + "\nturn: " + turn + "\nturn_phase: " + turn_phase + "\nisPlayerSpectator: " + isPlayerSpectator)
   if (turn_phase == TURN_PHASE.MOVE_PAWN) {
     if ((idPlayer == 0) && (turn == TURN.PLAYER_0)) {
       pawn0.makePawnInteractive();
@@ -107,6 +116,9 @@ app.ticker.add((delta) => {
     if ((idPlayer == 1) && (turn == TURN.PLAYER_1)) {
       pawn1.makePawnInteractive();
     }
+    updatePawnAdjacentBoxes(pawn0);
+    updatePawnAdjacentBoxes(pawn1);
+
   }
 
 });

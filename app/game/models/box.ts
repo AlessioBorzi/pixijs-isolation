@@ -1,4 +1,4 @@
-import { Sprite } from 'pixi.js';
+import { Sprite, Texture } from 'pixi.js';
 
 export const BLOCK_DIMENSION = 40;
 export const PADDING = 5;
@@ -18,10 +18,16 @@ export class Box {
     return this;
   }
 
-  makeBoxInteractive(): void {
-    this.sprite = Sprite.from('assets/images/boxInteractive.png');
-    this.sprite.interactive = true;
-    this.sprite.cursor = 'pointer';
+  update(interactive: boolean): void {
+    if (interactive) {
+      this.sprite.texture = Texture.from('assets/images/boxInteractive.png');
+      this.sprite.interactive = true;
+      this.sprite.cursor = 'pointer';
+    } else{
+      this.sprite.texture = Texture.from('assets/images/box.png');
+      this.sprite.interactive = false;
+      this.sprite.cursor = 'cursor';
+    }
   }
 }
 
