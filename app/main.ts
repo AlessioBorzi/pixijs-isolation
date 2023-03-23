@@ -76,6 +76,8 @@ socket.connection.onmessage = (signal) => {
     case 'init':
       idPlayer = payload.data.id;
       isPlayerSpectator = payload.data.spectator;
+      turn = payload.turn;
+      turn_phase = payload.turn_phase;
       break;
     case 'update':
       break;
@@ -97,7 +99,7 @@ export const TURN_PHASE = {
 
 app.ticker.add((delta) => {
   //Move pawn phase
-  console.log(idPlayer + " " + turn + " " + turn_phase + " " + isPlayerSpectator)
+  console.log("idPlayer: " + idPlayer + "\nturn: " + turn + "\nturn_phase: " + turn_phase + "\nisPlayerSpectator: " + isPlayerSpectator)
   if (turn_phase == TURN_PHASE.MOVE_PAWN) {
     if ((idPlayer == 0) && (turn == TURN.PLAYER_0)) {
       pawn0.makePawnInteractive();
