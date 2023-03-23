@@ -14,11 +14,11 @@ export class Box {
     this.sprite.height = BLOCK_DIMENSION;
     this.sprite.width = BLOCK_DIMENSION;
     this.sprite.interactive = false;
-    this.sprite.on('pointertap', () => boxOnClick());
+    this.sprite.on('pointertap', () => boxOnClick(this));
     return this;
   }
 
-  makeInteractive(): void {
+  makeBoxInteractive(): void {
     this.sprite = Sprite.from('assets/images/boxInteractive.png');
     this.sprite.interactive = true;
     this.sprite.cursor = 'pointer';
@@ -27,7 +27,6 @@ export class Box {
 
 
 // What happens when you click on a box
-export function boxOnClick() {
+export function boxOnClick(box: Box): void {
   console.log("Hey, you clicked on the box!");
-
 }

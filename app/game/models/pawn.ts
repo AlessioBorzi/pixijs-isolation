@@ -6,6 +6,7 @@ export class Pawn {
   sprite: Sprite;
   x: number;
   y: number;
+  adjacent: number[][];
 
   constructor(id: boolean) {
     this.sprite = Sprite.from('assets/images/rocket.png');
@@ -33,8 +34,25 @@ export class Pawn {
   }
 }
 
+
+const CHECKBOARD_HEIGHT = 6;
+const CHECKBOARD_WIDTH = 8;
+
 // What happens when you click on the pawn
 export function pawnOnClick(pawn: Pawn): void  {
   console.log("Hey, you clicked on the pawn!");
-  //boxes[pawn.x][pawn.y]
+  const adjacent: number[][] = [];
+  switch (true) {
+    case pawn.x > 0:
+      adjacent.push([pawn.x-1,pawn.y]);
+    case pawn.y > 0:
+      adjacent.push([pawn.x,pawn.y-1]);
+    case pawn.x < CHECKBOARD_HEIGHT:
+      adjacent.push([pawn.x+1,pawn.y]);
+    case pawn.y < CHECKBOARD_WIDTH:
+      adjacent.push([pawn.x,pawn.y+1]);
+    default:
+      break;
+  }
+  pawn.adjacent = adjacent;
 }

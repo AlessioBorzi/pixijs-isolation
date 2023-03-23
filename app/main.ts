@@ -7,13 +7,13 @@ import KeyListener from './game/helpers/keylistener';
 import { Socket } from './game/helpers/sockets';
 
 const GAME_WIDTH = 800;
-const GAME_HEIGTH = 600;
+const GAME_HEIGHT = 600;
 
 // Create the app with a black background
 const app = new Application({
   backgroundColor: 0x000000,
   width: GAME_WIDTH,
-  height: GAME_HEIGTH,
+  height: GAME_HEIGHT,
 });
 
 document.body.appendChild(app.view);
@@ -27,12 +27,12 @@ const checkboard = new Container();
 const boxes = [];
 
 // Create a 6x8 grid of boxes
-const checkboardHeight = 6;
-const checkboardWidth = 8;
+const CHECKBOARD_HEIGHT = 6;
+const CHECKBOARD_WIDTH = 8;
 
-for (let i = 0; i < checkboardWidth; i++) {
+for (let i = 0; i < CHECKBOARD_WIDTH; i++) {
   boxes.push([]);
-  for (let j = 0; j < checkboardHeight; j++) {
+  for (let j = 0; j < CHECKBOARD_HEIGHT; j++) {
     const box = new Box();
     box.sprite.x = i * (BLOCK_DIMENSION + PADDING);
     box.sprite.y = j * (BLOCK_DIMENSION + PADDING);
