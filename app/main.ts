@@ -29,14 +29,15 @@ const boxes = [];
 // Create a 6x8 grid of boxes
 const checkboardHeight = 6;
 const checkboardWidth = 8;
-for (let j = 0; j < checkboardHeight; j++) {
+
+for (let i = 0; i < checkboardWidth; i++) {
   boxes.push([]);
-  for (let i = 0; i < checkboardWidth; i++) {
+  for (let j = 0; j < checkboardHeight; j++) {
     const box = new Box();
     box.sprite.x = i * (BLOCK_DIMENSION + PADDING);
     box.sprite.y = j * (BLOCK_DIMENSION + PADDING);
     checkboard.addChild(box.sprite);
-    boxes[j].push(box);
+    boxes[i].push(box);
   }
 }
 
@@ -57,10 +58,15 @@ app.stage.addChild(checkboard);
 
 // Client
 
+let idPlayer: number;
+let isPlayerSpectator: boolean;
+let turn: boolean;
+let turn_phase: boolean;
+
 function sendData(): void {
   socket.send({
     type: 'input',
-    data: 'Hello World', //this is temporary of course
+    data: 'Hello World',
   });
 }
 
@@ -68,14 +74,37 @@ socket.connection.onmessage = (signal) => {
   const payload = JSON.parse(signal.data);
   switch (payload.type) {
     case 'init':
-      console.log('Hello World');
+      idPlayer = payload.data.id;
+      isPlayerSpectator = payload.data.spectator;
       break;
     case 'update':
-      console.log('Hello World');
       break;
     default:
       break;
   }
 };
 
-app.ticker.add((delta) => {});
+
+export const TURN = {
+  PLAYER_0 : false,
+  PLAYER_1 : true,
+} as const;
+export const TURN_PHASE = {
+  MOVE_PAWN : false,
+  REMOVE_BOX : true,
+} as const;
+
+
+app.ticker.add((delta) => {
+  //Move pawn phase
+  console.log(idPlayer + " " + turn + " " + turn_phase + " " + isPlayerSpectator)
+  if (turn_phase == TURN_PHASE.MOVE_PAWN) {
+    if ((idPlayer == 0) && (turn == TURN.PLAYER_0)) {
+      pawn0.makePawnInteractive();
+    }
+    if ((idPlayer == 1) && (turn == TURN.PLAYER_1)) {
+      pawn1.makePawnInteractive();
+    }
+  }
+
+});

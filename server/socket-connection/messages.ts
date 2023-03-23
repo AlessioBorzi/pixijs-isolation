@@ -9,10 +9,12 @@ export function getPlayersDataMessage(data: Player[]): string {
   });
 }
 
-export function getInitPlayerMessage(data: Player): string {
+export function getInitPlayerMessage(data: Player,turn: boolean, turn_phase: boolean): string {
   return JSON.stringify({
     type: messageType.INIT,
     timestamp: Date.now(),
     data,
+    turn,
+    turn_phase
   });
 }

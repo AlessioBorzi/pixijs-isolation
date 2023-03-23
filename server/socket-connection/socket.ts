@@ -16,6 +16,7 @@ const enum TURN_PHASE {
   MOVE_PAWN = false,
   REMOVE_BOX = true,
 }
+
 let turn: Turn = TURN.PLAYER_0;
 let turn_phase = TURN_PHASE.MOVE_PAWN;
 
@@ -40,7 +41,7 @@ function onConnection(ws: WebSocketClient): void {
 
   ws.id = player.id;
 
-  const initMessage = getInitPlayerMessage(player);
+  const initMessage = getInitPlayerMessage(player,turn,turn_phase);
 
   ws.send(initMessage);
   ws.on('message', updatePlayerDataOnInput);
