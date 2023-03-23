@@ -23,18 +23,18 @@ export class Pawn {
     this.sprite.y = this.y * (BLOCK_DIMENSION + PADDING);
     this.sprite.height = BLOCK_DIMENSION;
     this.sprite.width = BLOCK_DIMENSION;
-    this.sprite.on('pointertap', pawnOnClick);
+    this.sprite.on('pointertap', () => pawnOnClick(this));
     return this;
   }
 
-  makePawnInteractive() {
+  makePawnInteractive(): void {
     this.sprite.interactive = true;
     this.sprite.cursor = 'pointer';
   }
 }
 
 // What happens when you click on the pawn
-export function pawnOnClick() {
+export function pawnOnClick(pawn: Pawn): void  {
+  console.log("Hey, you clicked on the pawn!");
   //boxes[pawn.x][pawn.y]
-  console.log("Hello World");
 }
