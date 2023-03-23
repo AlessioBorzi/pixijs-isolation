@@ -56,8 +56,14 @@ checkboard.pivot.y = checkboard.height / 2;
 
 app.stage.addChild(checkboard);
 
+// Client
 
-function updatePawnAdjacentBoxes(pawn: Pawn): void {
+let idPlayer: number;
+let isPlayerSpectator: boolean;
+let turn: boolean;
+let turn_phase: boolean;
+
+function checkPawnAdjacentBoxes(pawn: Pawn): void {
   for (let i = 0; i < pawn.adjacent.length; i++) {
     const l = pawn.adjacent[i];
     const b = boxes[(l[0])][(l[1])];
@@ -65,12 +71,21 @@ function updatePawnAdjacentBoxes(pawn: Pawn): void {
   }
 }
 
-// Client
-
-let idPlayer: number;
-let isPlayerSpectator: boolean;
-let turn: boolean;
-let turn_phase: boolean;
+function checkPawnMove(pawn: Pawn): number[] {
+  let move: number[];
+  for (let i = 0; i < pawn.adjacent.length; i++) {
+    const l = pawn.adjacent[i];
+    const b = boxes[(l[0])][(l[1])];
+    if (b.move) {
+      b.move = false;
+      move = l;
+      pawn.onMove = false;
+      checkPawnAdjacentBoxes(pawn);
+      break;
+    }
+  }
+  return move;
+}
 
 function sendData(): void {
   socket.send({
@@ -87,6 +102,7 @@ socket.connection.onmessage = (signal) => {
       isPlayerSpectator = payload.data.spectator;
       turn = payload.turn;
       turn_phase = payload.turn_phase;
+      console.log(idPlayer);
       break;
     case 'update':
       break;
@@ -109,15 +125,30 @@ app.ticker.add((delta) => {
   //console.log("idPlayer: " + idPlayer + "\nturn: " + turn + "\nturn_phase: " + turn_phase + "\nisPlayerSpectator: " + isPlayerSpectator)
 
   //Move pawn phase
+  let move: number[]; // a vector with the coordinates of the move
   if (turn_phase == TURN_PHASE.MOVE_PAWN) {
     if ((idPlayer == 0) && (turn == TURN.PLAYER_0)) {
       pawn0.makePawnInteractive();
+      checkPawnAdjacentBoxes(pawn0);
+      move = checkPawnMove(pawn0);
+      if (!(move == null)) {
+        pawn0.x = move[0];
+        pawn0.y = move[1];
+        pawn0.updatePosition();
+      }
     }
     if ((idPlayer == 1) && (turn == TURN.PLAYER_1)) {
       pawn1.makePawnInteractive();
+      checkPawnAdjacentBoxes(pawn1);
+      move = checkPawnMove(pawn1);
+      if (!(move == null)) {
+        pawn1.x = move[0];
+        pawn1.y = move[1];
+        pawn1.updatePosition();
+      }
     }
-    updatePawnAdjacentBoxes(pawn0);
-    updatePawnAdjacentBoxes(pawn1);
+
+
 
   }
 

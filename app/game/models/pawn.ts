@@ -51,6 +51,24 @@ export class Pawn {
     this.sprite.interactive = true;
     this.sprite.cursor = 'pointer';
   }
+
+  updatePosition(): void{
+    this.sprite.x = this.x * (BLOCK_DIMENSION + PADDING);
+    this.sprite.y = this.y * (BLOCK_DIMENSION + PADDING);
+    this.adjacent = [];
+    if (this.x > 0) {
+      this.adjacent.push([this.x-1,this.y]);
+    }
+    if (this.y > 0) {
+      this.adjacent.push([this.x,this.y-1]);
+    }
+    if (this.x < CHECKBOARD_WIDTH-1) {
+      this.adjacent.push([this.x+1,this.y]);
+    }
+    if (this.y < CHECKBOARD_HEIGHT-1) {
+      this.adjacent.push([this.x,this.y+1]);
+    }
+  }
 }
 
 // What happens when you click on the pawn

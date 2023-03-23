@@ -6,8 +6,10 @@ export const PADDING = 5;
 // The checkboard is made of boxes
 export class Box {
   sprite: Sprite;
+  move: boolean;
 
   constructor() {
+    this.move = false;
     this.sprite = Sprite.from('assets/images/box.png');
     this.sprite.x = 0;
     this.sprite.y = 0;
@@ -35,4 +37,5 @@ export class Box {
 // What happens when you click on a box
 export function boxOnClick(box: Box): void {
   console.log("Hey, you clicked on the box!");
+  box.move = true;
 }
