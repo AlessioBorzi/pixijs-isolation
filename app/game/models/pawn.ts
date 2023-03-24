@@ -52,7 +52,7 @@ export class Pawn {
     this.sprite.cursor = 'pointer';
   }
 
-  updatePosition(): void{
+  updatePosition(): void {
     this.sprite.x = this.x * (BLOCK_DIMENSION + PADDING);
     this.sprite.y = this.y * (BLOCK_DIMENSION + PADDING);
     this.adjacent = [];
