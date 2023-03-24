@@ -9,6 +9,7 @@ module.exports = {
     entry: { app: ['./shared/index.ts', './app/main.ts',] },
     // Necessary in order to use source maps and debug directly TypeScript files
     devtool: 'source-map',
+    mode: 'development',
     module: {
         rules: [
             // Necessary in order to use TypeScript
