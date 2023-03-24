@@ -22,13 +22,14 @@ export class Pawn {
       this.y = 3;
     }
 
-    this.updatePosition();
-
     this.onMove = false;
     this.sprite = Sprite.from("assets/images/rocket.png");
     this.sprite.height = BLOCK_DIMENSION;
     this.sprite.width = BLOCK_DIMENSION;
     this.sprite.on("pointertap", () => pawnOnClick(this));
+
+    this.updatePosition();
+
     return this;
   }
 
