@@ -21,13 +21,13 @@ export class Box {
   }
 
   update(interactive: boolean): void {
+    this.sprite.interactive = interactive;
+
     if (interactive) {
       this.sprite.texture = Texture.from("assets/images/boxInteractive.png");
-      this.sprite.interactive = true;
       this.sprite.cursor = "pointer";
     } else {
       this.sprite.texture = Texture.from("assets/images/box.png");
-      this.sprite.interactive = false;
       this.sprite.cursor = "cursor";
     }
   }
