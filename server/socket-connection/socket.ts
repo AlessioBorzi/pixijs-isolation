@@ -1,24 +1,15 @@
 import { WebSocketClient, WebSocketServer } from 'https://deno.land/x/websocket@v0.1.4/mod.ts';
-import { Player } from '../../shared/player.model.ts';
-import { createPlayer } from '../player/player.ts';
 import { messageType } from '../../shared/message.model.ts';
+import { Player } from '../../shared/player.model.ts';
+import { Turn, TurnPhase } from '../../shared/turn.model.ts';
+import { createPlayer } from '../player/player.ts';
 import { getInitPlayerMessage, getPlayersDataMessage } from './messages.ts';
 
 // Players data
 const players: Player[] = [];
 
-// Turn management
-const enum TURN {
-  PLAYER_0 = false,
-  PLAYER_1 = true,
-}
-const enum TURN_PHASE {
-  MOVE_PAWN = false,
-  REMOVE_BOX = true,
-}
-
-let turn: Turn = TURN.PLAYER_0;
-let turn_phase = TURN_PHASE.MOVE_PAWN;
+let turn: Turn = Turn.PLAYER_0;
+let turn_phase = TurnPhase.MOVE_PAWN;
 
 function sendToAllClients(clients, data: string): void {
   for (const client of clients) {
@@ -41,7 +32,7 @@ function onConnection(ws: WebSocketClient): void {
 
   ws.id = player.id;
 
-  const initMessage = getInitPlayerMessage(player,turn,turn_phase);
+  const initMessage = getInitPlayerMessage(player, turn, turn_phase);
 
   ws.send(initMessage);
   ws.on('message', updatePlayerDataOnInput);

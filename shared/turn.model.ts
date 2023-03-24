@@ -1,8 +1,8 @@
-export const TURN = {
-  PLAYER_0 : false,
-  PLAYER_1 : true,
-} as const;
-export const TURN_PHASE = {
-  MOVE_PAWN : false,
-  REMOVE_BOX : true,
-} as const;
+export const enum Turn {
+  PLAYER_0 = 0,
+  PLAYER_1 = 1,
+}
+export const enum TurnPhase {
+  MOVE_PAWN = 0,
+  REMOVE_BOX = 1,
+}

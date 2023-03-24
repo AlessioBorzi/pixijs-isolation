@@ -1,10 +1,12 @@
-import './css/style.css';
+import "./css/style.css";
 
-import { Pawn, pawnOnClick } from './game/models/pawn';
-import { Box, BLOCK_DIMENSION, PADDING } from './game/models/box';
-import { Application, Container } from 'pixi.js';
-import KeyListener from './game/helpers/keylistener';
-import { Socket } from './game/helpers/sockets';
+import { Pawn, pawnOnClick } from "./game/models/pawn";
+import { Box, BLOCK_DIMENSION, PADDING } from "./game/models/box";
+import { Application, Container } from "pixi.js";
+import KeyListener from "./game/helpers/keylistener";
+import { Socket } from "./game/helpers/sockets";
+import { Turn, TurnPhase } from "../shared/turn.model";
+import { messageType } from "../shared/message.model";
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
@@ -60,25 +62,23 @@ app.stage.addChild(checkboard);
 
 let idPlayer: number;
 let isPlayerSpectator: boolean;
-let turn: boolean;
-let turn_phase: boolean;
+let turn: Turn;
+let turn_phase: TurnPhase;
 
 function checkPawnAdjacentBoxes(pawn: Pawn): void {
-  for (let i = 0; i < pawn.adjacent.length; i++) {
-    const l = pawn.adjacent[i];
-    const b = boxes[(l[0])][(l[1])];
+  for (const pawnAdjacent of pawn.adjacent) {
+    const b = boxes[pawnAdjacent[0]][pawnAdjacent[1]];
     b.update(pawn.onMove);
   }
 }
 
 function checkPawnMove(pawn: Pawn): number[] {
   let move: number[];
-  for (let i = 0; i < pawn.adjacent.length; i++) {
-    const l = pawn.adjacent[i];
-    const b = boxes[(l[0])][(l[1])];
+  for (const pawnAdjacent of pawn.adjacent) {
+    const b = boxes[pawnAdjacent[0]][pawnAdjacent[1]];
     if (b.move) {
       b.move = false;
-      move = l;
+      move = pawnAdjacent;
       pawn.onMove = false;
       checkPawnAdjacentBoxes(pawn);
       break;
@@ -89,67 +89,53 @@ function checkPawnMove(pawn: Pawn): number[] {
 
 function sendData(): void {
   socket.send({
-    type: 'input',
-    data: 'Hello World',
+    type: "input",
+    data: "Hello World",
   });
 }
 
 socket.connection.onmessage = (signal) => {
   const payload = JSON.parse(signal.data);
   switch (payload.type) {
-    case 'init':
+    case messageType.INIT:
       idPlayer = payload.data.id;
       isPlayerSpectator = payload.data.spectator;
       turn = payload.turn;
       turn_phase = payload.turn_phase;
       console.log(idPlayer);
       break;
-    case 'update':
+    case messageType.UPDATE:
       break;
     default:
       break;
   }
 };
 
-
-export const TURN = {
-  PLAYER_0 : false,
-  PLAYER_1 : true,
-} as const;
-export const TURN_PHASE = {
-  MOVE_PAWN : false,
-  REMOVE_BOX : true,
-} as const;
-
 app.ticker.add((delta) => {
   //console.log("idPlayer: " + idPlayer + "\nturn: " + turn + "\nturn_phase: " + turn_phase + "\nisPlayerSpectator: " + isPlayerSpectator)
 
   //Move pawn phase
   let move: number[]; // a vector with the coordinates of the move
-  if (turn_phase == TURN_PHASE.MOVE_PAWN) {
-    if ((idPlayer == 0) && (turn == TURN.PLAYER_0)) {
+  if (turn_phase == TurnPhase.MOVE_PAWN) {
+    if (idPlayer == 0 && turn == Turn.PLAYER_0) {
       pawn0.makePawnInteractive();
       checkPawnAdjacentBoxes(pawn0);
       move = checkPawnMove(pawn0);
-      if (!(move == null)) {
+      if (move != null) {
         pawn0.x = move[0];
         pawn0.y = move[1];
         pawn0.updatePosition();
       }
     }
-    if ((idPlayer == 1) && (turn == TURN.PLAYER_1)) {
+    if (idPlayer == 1 && turn == Turn.PLAYER_1) {
       pawn1.makePawnInteractive();
       checkPawnAdjacentBoxes(pawn1);
       move = checkPawnMove(pawn1);
-      if (!(move == null)) {
+      if (move != null) {
         pawn1.x = move[0];
         pawn1.y = move[1];
         pawn1.updatePosition();
       }
     }
-
-
-
   }
-
 });
