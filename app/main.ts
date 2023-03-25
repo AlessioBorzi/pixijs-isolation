@@ -64,7 +64,7 @@ app.stage.addChild(checkboard);
 const player: Player = {
   id: 0,
   isSpectator: true,
-}
+};
 
 const gameData: GameData = {
   turn: 0,
@@ -72,7 +72,7 @@ const gameData: GameData = {
   positionPawn0: [0,2],
   positionPawn1: [7,3],
   checkboard: Array(CHECKBOARD_WIDTH).fill(Array(CHECKBOARD_HEIGHT).fill(false)),
-}
+};
 
 function checkPawnAdjacentBoxes(pawn: Pawn): void {
   for (const pawnAdjacent of pawn.adjacent) {
