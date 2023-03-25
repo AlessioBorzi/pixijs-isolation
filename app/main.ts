@@ -138,7 +138,7 @@ app.ticker.add((delta) => {
     if (player.id == 0 && gameData.turn == Turn.PLAYER_0) {
       pawnOnMove(pawn0);
     }
-    if (player.id == 1 && gameData.turn == Turn.PLAYER_1) {
+    else if (player.id == 1 && gameData.turn == Turn.PLAYER_1) {
       pawnOnMove(pawn1);
     }
   }
