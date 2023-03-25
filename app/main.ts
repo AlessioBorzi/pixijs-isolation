@@ -69,8 +69,8 @@ const player: Player = {
 const gameData: GameData = {
   turn: 0,
   turn_phase: 0,
-  positionPawn0: [0,2],
-  positionPawn1: [7,3],
+  positionPawn0: [0, 2],
+  positionPawn1: [7, 3],
   checkboard: Array(CHECKBOARD_WIDTH).fill(Array(CHECKBOARD_HEIGHT).fill(false)),
 };
 
@@ -101,7 +101,7 @@ function pawnOnMove(pawn: Pawn): void {
   checkPawnAdjacentBoxes(pawn);
   const move = checkPawnMove(pawn); // a vector with the coordinates of the move
   if (move != null) {
-    [pawn.x, paw.y] = move;
+    [pawn.x, pawn.y] = move;
     pawn.updatePosition();
   }
 }
@@ -137,8 +137,7 @@ app.ticker.add((delta) => {
   if (gameData.turn_phase == TurnPhase.MOVE_PAWN) {
     if (player.id == 0 && gameData.turn == Turn.PLAYER_0) {
       pawnOnMove(pawn0);
-    }
-    else if (player.id == 1 && gameData.turn == Turn.PLAYER_1) {
+    } else if (player.id == 1 && gameData.turn == Turn.PLAYER_1) {
       pawnOnMove(pawn1);
     }
   }

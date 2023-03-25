@@ -1,5 +1,2 @@
-import { initApp } from "./routes.ts";
-import { initSocketConnection } from "./socket-connection/socket.ts";
-
-initApp();
-initSocketConnection();
+import "./routes.ts";
+import "./socket-handler/socket.ts";
