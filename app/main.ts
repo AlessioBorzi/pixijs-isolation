@@ -7,6 +7,8 @@ import KeyListener from "./game/helpers/keylistener";
 import { Socket } from "./game/helpers/sockets";
 import { Turn, TurnPhase } from "../shared/turn.model";
 import { messageType } from "../shared/message.model";
+import { GameData } from "../shared/gameData.model";
+import { Player } from "../shared/player.model";
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
@@ -59,11 +61,18 @@ checkboard.pivot.y = checkboard.height / 2;
 app.stage.addChild(checkboard);
 
 // Client
+const player: Player = {
+  id: 0,
+  isSpectator: true,
+}
 
-let idPlayer: number;
-let isPlayerSpectator: boolean;
-let turn: Turn;
-let turn_phase: TurnPhase;
+const gameData: GameData = {
+  turn: 0,
+  turn_phase: 0,
+  positionPawn0: [0,2],
+  positionPawn1: [7,3],
+  checkboard: Array(CHECKBOARD_WIDTH).fill(Array(CHECKBOARD_HEIGHT).fill(false)),
+}
 
 function checkPawnAdjacentBoxes(pawn: Pawn): void {
   for (const pawnAdjacent of pawn.adjacent) {
@@ -87,6 +96,17 @@ function checkPawnMove(pawn: Pawn): number[] {
   return move;
 }
 
+function pawnOnMove(pawn: Pawn): void {
+  pawn.makePawnInteractive();
+  checkPawnAdjacentBoxes(pawn);
+  const move: number[] = checkPawnMove(pawn); // a vector with the coordinates of the move
+  if (move != null) {
+    pawn.x = move[0];
+    pawn.y = move[1];
+    pawn.updatePosition();
+  }
+}
+
 function sendData(): void {
   socket.send({
     type: "input",
@@ -98,11 +118,11 @@ socket.connection.onmessage = (signal) => {
   const payload = JSON.parse(signal.data);
   switch (payload.type) {
     case messageType.INIT:
-      idPlayer = payload.data.id;
-      isPlayerSpectator = payload.data.spectator;
-      turn = payload.turn;
-      turn_phase = payload.turn_phase;
-      console.log(idPlayer);
+      player.id = payload.data.id;
+      player.isSpectator = payload.data.spectator;
+      gameData.turn = payload.turn;
+      gameData.turn_phase = payload.turn_phase;
+      console.log(player.id);
       break;
     case messageType.UPDATE:
       break;
@@ -115,27 +135,12 @@ app.ticker.add((delta) => {
   //console.log("idPlayer: " + idPlayer + "\nturn: " + turn + "\nturn_phase: " + turn_phase + "\nisPlayerSpectator: " + isPlayerSpectator)
 
   //Move pawn phase
-  let move: number[]; // a vector with the coordinates of the move
-  if (turn_phase == TurnPhase.MOVE_PAWN) {
-    if (idPlayer == 0 && turn == Turn.PLAYER_0) {
-      pawn0.makePawnInteractive();
-      checkPawnAdjacentBoxes(pawn0);
-      move = checkPawnMove(pawn0);
-      if (move != null) {
-        pawn0.x = move[0];
-        pawn0.y = move[1];
-        pawn0.updatePosition();
-      }
+  if (gameData.turn_phase == TurnPhase.MOVE_PAWN) {
+    if (player.id == 0 && gameData.turn == Turn.PLAYER_0) {
+      pawnOnMove(pawn0);
     }
-    if (idPlayer == 1 && turn == Turn.PLAYER_1) {
-      pawn1.makePawnInteractive();
-      checkPawnAdjacentBoxes(pawn1);
-      move = checkPawnMove(pawn1);
-      if (move != null) {
-        pawn1.x = move[0];
-        pawn1.y = move[1];
-        pawn1.updatePosition();
-      }
+    if (player.id == 1 && gameData.turn == Turn.PLAYER_1) {
+      pawnOnMove(pawn1);
     }
   }
 });
