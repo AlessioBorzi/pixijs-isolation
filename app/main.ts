@@ -46,7 +46,7 @@ for (let i = 0; i < CHECKBOARD_HEIGHT; i++) {
 }
 
 // Make the two pawns
-const pawns = [new Pawn(false), new Pawn(true)]
+const pawns = [new Pawn(false), new Pawn(true)];
 checkboard.addChild(pawns[0].sprite);
 checkboard.addChild(pawns[1].sprite);
 
@@ -68,7 +68,10 @@ const player: Player = {
 const gameData: GameData = {
   turn: Turn.PLAYER_0,
   turnPhase: TurnPhase.MOVE_PAWN,
-  positionPawn: [[0, 2],[7, 3]],
+  positionPawn: [
+    [0, 2],
+    [7, 3],
+  ],
   checkboard: Array(CHECKBOARD_HEIGHT).fill(Array(CHECKBOARD_WIDTH).fill(false)),
 };
 
@@ -92,7 +95,7 @@ function checkPawnMove(pawn: Pawn): number[] {
       b.move = false;
       move = pawnAdjacent;
       pawn.onMove = false;
-      checkPawnAdjacentBoxes(pawn,false);
+      checkPawnAdjacentBoxes(pawn, false);
       break;
     }
   }
@@ -102,7 +105,7 @@ function checkPawnMove(pawn: Pawn): number[] {
 function movePhase(i: number): void {
   const pawn = pawns[i];
   pawn.makePawnInteractive(true);
-  checkPawnAdjacentBoxes(pawn,true);
+  checkPawnAdjacentBoxes(pawn, true);
   const move = checkPawnMove(pawn); // a vector with the coordinates of the move
   if (move != null) {
     [pawn.x, pawn.y] = gameData.positionPawn[i] = move;
@@ -113,7 +116,7 @@ function movePhase(i: number): void {
 
 // Remove Box Phase
 
-function equalArray(a : number[], b : number[]): boolean {
+function equalArray(a: number[], b: number[]): boolean {
   return a.every((value, index) => value === b[index]);
 }
 
@@ -121,8 +124,8 @@ function makeAllBoxesInteractive(interactive: boolean): void {
   for (let i = 0; i < CHECKBOARD_WIDTH; i++) {
     for (let j = 0; j < CHECKBOARD_HEIGHT; j++) {
       const b = boxes[j][i];
-      const a = [i,j];
-      if ( !(equalArray(a,gameData.positionPawn[0]) || equalArray(a,gameData.positionPawn[1])) ) {
+      const a = [i, j];
+      if (!(equalArray(a, gameData.positionPawn[0]) || equalArray(a, gameData.positionPawn[1]))) {
         b.update(interactive);
       }
     }
@@ -144,7 +147,7 @@ function checkBoxRemoved(): void {
   }
 }
 
-function removeBoxPhase (i : number): void {
+function removeBoxPhase(i: number): void {
   const pawn = pawns[i];
   pawn.makePawnInteractive(false);
   makeAllBoxesInteractive(true);
@@ -190,9 +193,9 @@ app.ticker.add((delta) => {
   // Remove box phase
   if (gameData.turnPhase == TurnPhase.REMOVE_BOX) {
     if (player.id == 0 && gameData.turn == Turn.PLAYER_0) {
-      removeBoxPhase(0)
+      removeBoxPhase(0);
     } else if (player.id == 1 && gameData.turn == Turn.PLAYER_1) {
-      removeBoxPhase(1)
+      removeBoxPhase(1);
     }
   }
 });

@@ -35,11 +35,8 @@ export class Box {
       }
       this.sprite.cursor = "pointer";
     } else {
-      if (this.removed) {
-        this.sprite.texture = Texture.from("assets/images/boxRemoved.png");
-      } else {
-        this.sprite.texture = Texture.from("assets/images/box.png");
-      }
+      const image = this.removed ? "assets/images/boxRemoved.png" : "assets/images/box.png";
+      this.sprite.texture = Texture.from(image);
       this.sprite.cursor = "cursor";
     }
   }
@@ -58,6 +55,6 @@ export function boxOnClick(box: Box): void {
   } else {
     box.removed = true;
     box.justRemoved = true;
-    console.log("Box removed")
+    console.log("Box removed");
   }
 }
