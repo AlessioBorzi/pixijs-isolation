@@ -99,7 +99,7 @@ function checkPawnMove(pawn: Pawn): number[] {
 function pawnOnMove(pawn: Pawn): void {
   pawn.makePawnInteractive();
   checkPawnAdjacentBoxes(pawn);
-  const move: number[] = checkPawnMove(pawn); // a vector with the coordinates of the move
+  const move = checkPawnMove(pawn); // a vector with the coordinates of the move
   if (move != null) {
     pawn.x = move[0];
     pawn.y = move[1];
