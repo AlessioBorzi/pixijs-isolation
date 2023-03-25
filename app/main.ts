@@ -101,8 +101,7 @@ function pawnOnMove(pawn: Pawn): void {
   checkPawnAdjacentBoxes(pawn);
   const move = checkPawnMove(pawn); // a vector with the coordinates of the move
   if (move != null) {
-    pawn.x = move[0];
-    pawn.y = move[1];
+    [pawn.x, paw.y] = move;
     pawn.updatePosition();
   }
 }
