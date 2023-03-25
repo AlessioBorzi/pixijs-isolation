@@ -4,7 +4,7 @@ import { onConnection, sendToAllClients } from "./communication.ts";
 import { getPlayersDataMessage } from "./messages.ts";
 
 // Players data
-let players: Player[] = [];
+const players: Player[] = [];
 
 const wss: WebSocketServer = new WebSocketServer(3010);
 
