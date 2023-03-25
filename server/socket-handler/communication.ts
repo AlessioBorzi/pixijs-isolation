@@ -7,7 +7,7 @@ import { compareId } from "./helper.ts";
 import { getInitPlayerMessage } from "./messages.ts";
 
 let turn: Turn = Turn.PLAYER_0;
-let turn_phase = TurnPhase.MOVE_PAWN;
+let turnPhase = TurnPhase.MOVE_PAWN;
 
 export function sendToAllClients(clients: WebSocketClient[], data: string): void {
   for (const client of clients) {
@@ -45,7 +45,7 @@ export function onConnection(wss: WebSocketServer, ws: WebSocketClient, players:
 
   ws.id = player.id;
 
-  const initMessage = getInitPlayerMessage(player, turn, turn_phase);
+  const initMessage = getInitPlayerMessage(player, turn, turnPhase);
 
   ws.send(initMessage);
   ws.on("message", (data: string) => updatePlayerDataOnInput(data, players));
