@@ -33,9 +33,15 @@ export class Pawn {
     return this;
   }
 
-  makePawnInteractive(): void {
-    this.sprite.interactive = true;
-    this.sprite.cursor = "pointer";
+  makePawnInteractive(interactive: boolean): void {
+    this.sprite.interactive = interactive;
+
+    if (interactive) {
+      this.sprite.cursor = "pointer";
+    } else {
+      this.sprite.cursor = "cursor";
+    }
+
   }
 
   updatePosition(): void {

@@ -34,22 +34,21 @@ const boxes = [];
 const CHECKBOARD_HEIGHT = 6;
 const CHECKBOARD_WIDTH = 8;
 
-for (let i = 0; i < CHECKBOARD_WIDTH; i++) {
+for (let i = 0; i < CHECKBOARD_HEIGHT; i++) {
   boxes.push([]);
-  for (let j = 0; j < CHECKBOARD_HEIGHT; j++) {
+  for (let j = 0; j < CHECKBOARD_WIDTH; j++) {
     const box = new Box();
-    box.sprite.x = i * (BLOCK_DIMENSION + PADDING);
-    box.sprite.y = j * (BLOCK_DIMENSION + PADDING);
+    box.sprite.x = j * (BLOCK_DIMENSION + PADDING);
+    box.sprite.y = i * (BLOCK_DIMENSION + PADDING);
     checkboard.addChild(box.sprite);
     boxes[i].push(box);
   }
 }
 
 // Make the two pawns
-const pawn0 = new Pawn(false);
-const pawn1 = new Pawn(true);
-checkboard.addChild(pawn0.sprite);
-checkboard.addChild(pawn1.sprite);
+const pawns = [new Pawn(false), new Pawn(true)]
+checkboard.addChild(pawns[0].sprite);
+checkboard.addChild(pawns[1].sprite);
 
 // Move checkerboard to the center
 checkboard.x = app.screen.width / 2;
@@ -67,43 +66,89 @@ const player: Player = {
 };
 
 const gameData: GameData = {
-  turn: 0,
-  turn_phase: 0,
-  positionPawn0: [0, 2],
-  positionPawn1: [7, 3],
-  checkboard: Array(CHECKBOARD_WIDTH).fill(Array(CHECKBOARD_HEIGHT).fill(false)),
+  turn: Turn.PLAYER_0,
+  turnPhase: TurnPhase.MOVE_PAWN,
+  positionPawn: [[0, 2],[7, 3]],
+  checkboard: Array(CHECKBOARD_HEIGHT).fill(Array(CHECKBOARD_WIDTH).fill(false)),
 };
 
-function checkPawnAdjacentBoxes(pawn: Pawn): void {
+// Move Pawn Phase
+
+function checkPawnAdjacentBoxes(pawn: Pawn, waitForMove: boolean): void {
   for (const pawnAdjacent of pawn.adjacent) {
-    const b = boxes[pawnAdjacent[0]][pawnAdjacent[1]];
-    b.update(pawn.onMove);
+    const b = boxes[pawnAdjacent[1]][pawnAdjacent[0]];
+    if (!b.removed) {
+      b.waitForMove = waitForMove;
+      b.update(pawn.onMove);
+    }
   }
 }
 
 function checkPawnMove(pawn: Pawn): number[] {
   let move: number[];
   for (const pawnAdjacent of pawn.adjacent) {
-    const b = boxes[pawnAdjacent[0]][pawnAdjacent[1]];
+    const b = boxes[pawnAdjacent[1]][pawnAdjacent[0]];
     if (b.move) {
       b.move = false;
       move = pawnAdjacent;
       pawn.onMove = false;
-      checkPawnAdjacentBoxes(pawn);
+      checkPawnAdjacentBoxes(pawn,false);
       break;
     }
   }
   return move;
 }
 
-function pawnOnMove(pawn: Pawn): void {
-  pawn.makePawnInteractive();
-  checkPawnAdjacentBoxes(pawn);
+function movePhase(i: number): void {
+  const pawn = pawns[i];
+  pawn.makePawnInteractive(true);
+  checkPawnAdjacentBoxes(pawn,true);
   const move = checkPawnMove(pawn); // a vector with the coordinates of the move
   if (move != null) {
-    [pawn.x, pawn.y] = move;
+    [pawn.x, pawn.y] = gameData.positionPawn[i] = move;
     pawn.updatePosition();
+    gameData.turnPhase = TurnPhase.REMOVE_BOX;
   }
+}
+
+// Remove Box Phase
+
+function equalArray(a : number[], b : number[]): boolean {
+  return a.every((value, index) => value === b[index]);
+}
+
+function makeAllBoxesInteractive(interactive: boolean): void {
+  for (let i = 0; i < CHECKBOARD_WIDTH; i++) {
+    for (let j = 0; j < CHECKBOARD_HEIGHT; j++) {
+      const b = boxes[j][i];
+      const a = [i,j];
+      if ( !(equalArray(a,gameData.positionPawn[0]) || equalArray(a,gameData.positionPawn[1])) ) {
+        b.update(interactive);
+      }
+    }
+  }
+}
+
+function checkBoxRemoved(): void {
+  for (let i = 0; i < CHECKBOARD_WIDTH; i++) {
+    for (let j = 0; j < CHECKBOARD_HEIGHT; j++) {
+      const b = boxes[j][i];
+      if (b.justRemoved) {
+        b.justRemoved = false;
+        gameData.checkboard[j][i] = true;
+        makeAllBoxesInteractive(false);
+        gameData.turnPhase = TurnPhase.MOVE_PAWN;
+        return;
+      }
+    }
+  }
+}
+
+function removeBoxPhase (i : number): void {
+  const pawn = pawns[i];
+  pawn.makePawnInteractive(false);
+  makeAllBoxesInteractive(true);
+  checkBoxRemoved();
 }
 
 function sendData(): void {
@@ -120,7 +165,7 @@ socket.connection.onmessage = (signal) => {
       player.id = payload.data.id;
       player.isSpectator = payload.data.spectator;
       gameData.turn = payload.turn;
-      gameData.turn_phase = payload.turn_phase;
+      gameData.turnPhase = payload.turnPhase;
       console.log(player.id);
       break;
     case messageType.UPDATE:
@@ -131,14 +176,23 @@ socket.connection.onmessage = (signal) => {
 };
 
 app.ticker.add((delta) => {
-  //console.log("idPlayer: " + idPlayer + "\nturn: " + turn + "\nturn_phase: " + turn_phase + "\nisPlayerSpectator: " + isPlayerSpectator)
+  //console.log("idPlayer: " + idPlayer + "\nturn: " + turn + "\nturnPhase: " + turnPhase + "\nisPlayerSpectator: " + isPlayerSpectator)
 
-  //Move pawn phase
-  if (gameData.turn_phase == TurnPhase.MOVE_PAWN) {
+  // Move pawn phase
+  if (gameData.turnPhase == TurnPhase.MOVE_PAWN) {
     if (player.id == 0 && gameData.turn == Turn.PLAYER_0) {
-      pawnOnMove(pawn0);
+      movePhase(0);
     } else if (player.id == 1 && gameData.turn == Turn.PLAYER_1) {
-      pawnOnMove(pawn1);
+      movePhase(1);
+    }
+  }
+
+  // Remove box phase
+  if (gameData.turnPhase == TurnPhase.REMOVE_BOX) {
+    if (player.id == 0 && gameData.turn == Turn.PLAYER_0) {
+      removeBoxPhase(0)
+    } else if (player.id == 1 && gameData.turn == Turn.PLAYER_1) {
+      removeBoxPhase(1)
     }
   }
 });

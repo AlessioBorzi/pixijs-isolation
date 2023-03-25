@@ -9,7 +9,7 @@ import { getInitPlayerMessage, getPlayersDataMessage } from './messages.ts';
 const players: Player[] = [];
 
 let turn: Turn = Turn.PLAYER_0;
-let turn_phase = TurnPhase.MOVE_PAWN;
+let turnPhase = TurnPhase.MOVE_PAWN;
 
 function sendToAllClients(clients, data: string): void {
   for (const client of clients) {
@@ -32,7 +32,7 @@ function onConnection(ws: WebSocketClient): void {
 
   ws.id = player.id;
 
-  const initMessage = getInitPlayerMessage(player, turn, turn_phase);
+  const initMessage = getInitPlayerMessage(player, turn, turnPhase);
 
   ws.send(initMessage);
   ws.on('message', updatePlayerDataOnInput);

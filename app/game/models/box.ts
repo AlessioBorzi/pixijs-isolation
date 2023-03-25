@@ -7,9 +7,15 @@ export const PADDING = 5;
 export class Box {
   sprite: Sprite;
   move: boolean;
+  waitForMove: boolean;
+  removed: boolean;
+  justRemoved: boolean;
 
   constructor() {
+    this.waitForMove = false;
     this.move = false;
+    this.removed = false;
+    this.justRemoved = false;
     this.sprite = Sprite.from("assets/images/box.png");
     this.sprite.x = 0;
     this.sprite.y = 0;
@@ -24,17 +30,34 @@ export class Box {
     this.sprite.interactive = interactive;
 
     if (interactive) {
-      this.sprite.texture = Texture.from("assets/images/boxInteractive.png");
+      if (this.waitForMove) {
+        this.sprite.texture = Texture.from("assets/images/boxInteractive.png");
+      }
       this.sprite.cursor = "pointer";
     } else {
-      this.sprite.texture = Texture.from("assets/images/box.png");
+      if (this.removed) {
+        this.sprite.texture = Texture.from("assets/images/boxRemoved.png");
+      } else {
+        this.sprite.texture = Texture.from("assets/images/box.png");
+      }
       this.sprite.cursor = "cursor";
     }
+  }
+
+  remove(): void {
+    this.removed = true;
+    this.sprite.texture = Texture.from("assets/images/boxRemoved.png");
   }
 }
 
 // What happens when you click on a box
 export function boxOnClick(box: Box): void {
-  console.log("Hey, you clicked on the box!");
-  box.move = true;
+  console.log("Hey, you clicked on the box! (" + box.sprite.x + "," + box.sprite.y + ")");
+  if (box.waitForMove) {
+    box.move = true;
+  } else {
+    box.removed = true;
+    box.justRemoved = true;
+    console.log("Box removed")
+  }
 }
