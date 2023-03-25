@@ -178,24 +178,19 @@ socket.connection.onmessage = (signal) => {
   }
 };
 
-app.ticker.add((delta) => {
+app.ticker.add((/* delta */) => {
   //console.log("idPlayer: " + idPlayer + "\nturn: " + turn + "\nturnPhase: " + turnPhase + "\nisPlayerSpectator: " + isPlayerSpectator)
 
-  // Move pawn phase
-  if (gameData.turnPhase == TurnPhase.MOVE_PAWN) {
-    if (player.id == 0 && gameData.turn == Turn.PLAYER_0) {
-      movePhase(0);
-    } else if (player.id == 1 && gameData.turn == Turn.PLAYER_1) {
-      movePhase(1);
-    }
-  }
+  const isFirstPlayerTurn = player.id === 0 && gameData.turn === Turn.PLAYER_0;
+  const isSecondPlayerTurn = player.id === 1 && gameData.turn === Turn.PLAYER_1;
 
-  // Remove box phase
-  if (gameData.turnPhase == TurnPhase.REMOVE_BOX) {
-    if (player.id == 0 && gameData.turn == Turn.PLAYER_0) {
-      removeBoxPhase(0);
-    } else if (player.id == 1 && gameData.turn == Turn.PLAYER_1) {
-      removeBoxPhase(1);
+  if (isFirstPlayerTurn || isSecondPlayerTurn) {
+    const playerIndex = isFirstPlayerTurn ? 0 : 1;
+
+    if (gameData.turnPhase === TurnPhase.MOVE_PAWN) {
+      movePhase(playerIndex);
+    } else if (gameData.turnPhase === TurnPhase.REMOVE_BOX) {
+      removeBoxPhase(playerIndex);
     }
   }
 });
