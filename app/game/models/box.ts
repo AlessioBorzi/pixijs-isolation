@@ -1,7 +1,7 @@
 import { Sprite, Texture } from "pixi.js";
 
-export const BLOCK_DIMENSION = 40;
-export const PADDING = 5;
+export const BLOCK_DIMENSION = 80;
+export const PADDING = 10;
 
 // The checkboard is made of boxes
 export class Box {

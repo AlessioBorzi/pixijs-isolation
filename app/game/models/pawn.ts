@@ -42,18 +42,47 @@ export class Pawn {
     this.sprite.x = this.x * (BLOCK_DIMENSION + PADDING);
     this.sprite.y = this.y * (BLOCK_DIMENSION + PADDING);
     this.adjacent = [];
-    // Compute the coordinates of the adjacent boxes
+
+    /* Compute the coordinates of the adjacent boxes */
+
+    // left
     if (this.x > 0) {
       this.adjacent.push([this.x - 1, this.y]);
+
+      // top left
+      if (this.y > 0) {
+        this.adjacent.push([this.x - 1, this.y - 1]);
+      }
+
+      // bottom left
+      if (this.y < CHECKBOARD_HEIGHT - 1) {
+        this.adjacent.push([this.x - 1, this.y + 1]);
+      }
     }
-    if (this.y > 0) {
-      this.adjacent.push([this.x, this.y - 1]);
-    }
+
+    // right
     if (this.x < CHECKBOARD_WIDTH - 1) {
       this.adjacent.push([this.x + 1, this.y]);
+
+      // top right
+      if (this.y > 0) {
+        this.adjacent.push([this.x + 1, this.y - 1]);
+      }
+
+      // bottom right
+      if (this.y < CHECKBOARD_HEIGHT - 1) {
+        this.adjacent.push([this.x + 1, this.y + 1]);
+      }
     }
+
+    // top
     if (this.y < CHECKBOARD_HEIGHT - 1) {
       this.adjacent.push([this.x, this.y + 1]);
+    }
+
+    // bottom
+    if (this.y > 0) {
+      this.adjacent.push([this.x, this.y - 1]);
     }
   }
 }
