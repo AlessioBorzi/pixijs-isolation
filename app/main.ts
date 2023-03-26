@@ -3,8 +3,7 @@ import "./css/style.css";
 import { Pawn, pawnOnClick } from "./game/models/pawn";
 import { Box, BLOCK_DIMENSION, PADDING } from "./game/models/box";
 import { Application, Container } from "pixi.js";
-import KeyListener from "./game/helpers/keylistener";
-import { Socket } from "./game/helpers/sockets";
+import { CHECKBOARD_HEIGHT, CHECKBOARD_WIDTH } from "../shared/checkboard.model";
 import { Turn, TurnPhase } from "../shared/turn.model";
 import { messageType } from "../shared/message.model";
 import { GameData } from "../shared/gameData.model";
@@ -22,18 +21,14 @@ const app = new Application({
 
 document.body.appendChild(app.view);
 
-// I dont know yet what these two commands do
-const socket = new Socket();
-const Listener = new KeyListener();
+// WebSocket
+const ws = new WebSocket(`ws://${window.location.hostname}:3010`);
 
 // Make checkboard
 const checkboard = new Container();
 const boxes = [];
 
 // Create a 6x8 grid of boxes
-const CHECKBOARD_HEIGHT = 6;
-const CHECKBOARD_WIDTH = 8;
-
 for (let i = 0; i < CHECKBOARD_HEIGHT; i++) {
   boxes.push([]);
   for (let j = 0; j < CHECKBOARD_WIDTH; j++) {
@@ -60,12 +55,8 @@ checkboard.pivot.y = checkboard.height / 2;
 app.stage.addChild(checkboard);
 
 // Client
-const player: Player = {
-  id: 0,
-  isSpectator: true,
-};
-
-const gameData: GameData = {
+let player: Player;
+let gameData: GameData = {
   turn: Turn.PLAYER_0,
   turnPhase: TurnPhase.MOVE_PAWN,
   positionPawn: [
@@ -111,6 +102,7 @@ function movePhase(i: number): void {
     [pawn.x, pawn.y] = gameData.positionPawn[i] = move;
     pawn.updatePosition();
     gameData.turnPhase = TurnPhase.REMOVE_BOX;
+    sendGameData(gameData);
   }
 }
 
@@ -141,6 +133,8 @@ function checkBoxRemoved(): void {
         gameData.checkboard[j][i] = true;
         makeAllBoxesInteractive(false);
         gameData.turnPhase = TurnPhase.MOVE_PAWN;
+        gameData.turn = Number(!gameData.turn);
+        sendGameData(gameData);
         return;
       }
     }
@@ -154,35 +148,55 @@ function removeBoxPhase(i: number): void {
   checkBoxRemoved();
 }
 
-function sendData(): void {
-  socket.send({
-    type: "input",
-    data: "Hello World",
-  });
+function updateCheckboard(gameData: GameData): void {
+  for (let i of [0,1]) {
+    const pawn = pawns[i];
+    [pawn.x, pawn.y] = gameData.positionPawn[i];
+    pawn.updatePosition();
+  }
+  for (let i = 0; i < CHECKBOARD_WIDTH; i++) {
+    for (let j = 0; j < CHECKBOARD_HEIGHT; j++) {
+      let b = boxes[j][i];
+      b.removed = gameData.checkboard[j][i];
+      b.update(b.sprite.interactive);
+    }
+  }
 }
 
-socket.connection.onmessage = (signal) => {
-  const payload = JSON.parse(signal.data);
-  switch (payload.type) {
+function sendGameData(gameData: GameData): void {
+  console.log("I am sending a message to the server");
+  ws.send(JSON.stringify({
+    type: "GAME_DATA",
+    timestamp: Date.now(),
+    gameData,
+  }));
+}
+
+ws.onmessage = (signal) => {
+  const message = JSON.parse(signal.data);
+  switch (message.type) {
     case messageType.INIT:
-      player.id = payload.data.id;
-      player.isSpectator = payload.data.spectator;
-      gameData.turn = payload.turn;
-      gameData.turnPhase = payload.turnPhase;
-      console.log(player.id);
+      player = message.player;
+      gameData = message.gameData;
+      updateCheckboard(gameData);
+      console.log("Player id: " + player.id);
       break;
-    case messageType.UPDATE:
+    case messageType.GAME_DATA:
+      gameData = message.gameData;
+      updateCheckboard(gameData);
+      break;
+    case messageType.PLAYERS:
       break;
     default:
       break;
   }
 };
 
-app.ticker.add((/* delta */) => {
+app.ticker.add(() => {
   //console.log("idPlayer: " + idPlayer + "\nturn: " + turn + "\nturnPhase: " + turnPhase + "\nisPlayerSpectator: " + isPlayerSpectator)
 
-  const isFirstPlayerTurn = player.id === 0 && gameData.turn === Turn.PLAYER_0;
-  const isSecondPlayerTurn = player.id === 1 && gameData.turn === Turn.PLAYER_1;
+  const isFirstPlayerTurn = player?.id === 0 && gameData.turn === Turn.PLAYER_0;
+  const isSecondPlayerTurn = player?.id === 1 && gameData.turn === Turn.PLAYER_1;
 
   if (isFirstPlayerTurn || isSecondPlayerTurn) {
     const playerIndex = isFirstPlayerTurn ? 0 : 1;

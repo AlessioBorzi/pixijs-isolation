@@ -1,5 +1,5 @@
 export const enum messageType {
-  INIT = 'init',
-  INPUT = 'input',
-  UPDATE = 'update',
+  INIT = 'INIT',
+  GAME_DATA = 'GAME_DATA',
+  PLAYERS = 'PLAYERS',
 };

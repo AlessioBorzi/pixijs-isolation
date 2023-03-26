@@ -1,16 +1,56 @@
 import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@v0.1.4/mod.ts";
 import { Player } from "../../shared/player.model.ts";
-import { onConnection, sendToAllClients } from "./communication.ts";
-import { getPlayersDataMessage } from "./messages.ts";
+import { createPlayer } from "../player/player.ts"
+import { Turn, TurnPhase } from "../../shared/turn.model.ts";
+import { CHECKBOARD_HEIGHT, CHECKBOARD_WIDTH } from "../../shared/checkboard.model.ts";
+import { onConnection, sendToAllClients, getGameDataOnInput, getAvailableId, onClose } from "./communication.ts";
+import { getInitPlayerMessage, getGameDataMessage, getPlayersMessage } from "./messages.ts";
 
-// Players data
+// Global variables
 const players: Player[] = [];
+let gameData: GameData = {
+  turn: Turn.PLAYER_0,
+  turnPhase: TurnPhase.MOVE_PAWN,
+  positionPawn: [
+    [0, 2],
+    [7, 3],
+  ],
+  checkboard: Array(CHECKBOARD_HEIGHT).fill(Array(CHECKBOARD_WIDTH).fill(false)),
+};
 
 const wss: WebSocketServer = new WebSocketServer(3010);
 
 setInterval(() => {
-  const data = getPlayersDataMessage(players);
-  sendToAllClients(wss.clients, data);
+  const playersMessage = getPlayersMessage(players);
+  sendToAllClients(wss.clients, playersMessage);
 }, 100);
+
+
+function onClientMessage(wss: WebSocketServer, data: string): void {
+  gameData = getGameDataOnInput(data);
+  const gameDataMessage = getGameDataMessage(gameData);
+  sendToAllClients(wss.clients, gameDataMessage);
+  console.log(gameData);
+}
+
+
+function onConnection(wss: WebSocketServer, ws: WebSocketClient, players: Player[]): void {
+  // Create New Player
+  const id = getAvailableId(players);
+  const player = createPlayer(id);
+  players.push(player);
+  ws.id = player.id;
+  console.log(players);
+
+  // Send init data to client
+  const initMessage = getInitPlayerMessage(player, gameData);
+  ws.send(initMessage);
+
+  //
+  ws.on("message", (data) => onClientMessage(wss,data));
+
+  // Player leaves, delete data from list
+  ws.on("close", () => onClose(wss, ws, players));
+}
 
 wss.on("connection", (ws: WebSocketClient) => onConnection(wss, ws, players));
