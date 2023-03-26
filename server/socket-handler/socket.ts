@@ -1,10 +1,11 @@
 import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@v0.1.4/mod.ts";
-import { Player } from "../../shared/player.model.ts";
-import { createPlayer } from "../player/player.ts"
-import { Turn, TurnPhase } from "../../shared/turn.model.ts";
 import { CHECKBOARD_HEIGHT, CHECKBOARD_WIDTH } from "../../shared/checkboard.model.ts";
-import { onConnection, sendToAllClients, getGameDataOnInput, getAvailableId, onClose } from "./communication.ts";
-import { getInitPlayerMessage, getGameDataMessage, getPlayersMessage } from "./messages.ts";
+import { GameData } from "../../shared/gameData.model.ts";
+import { Player } from "../../shared/player.model.ts";
+import { Turn, TurnPhase } from "../../shared/turn.model.ts";
+import { createPlayer } from "../player/player.ts";
+import { getAvailableId, getGameDataOnInput, onClose, onConnection, sendToAllClients } from "./communication.ts";
+import { getGameDataMessage, getInitPlayerMessage, getPlayersMessage } from "./messages.ts";
 
 // Global variables
 const players: Player[] = [];
@@ -25,14 +26,12 @@ setInterval(() => {
   sendToAllClients(wss.clients, playersMessage);
 }, 100);
 
-
 function onClientMessage(wss: WebSocketServer, data: string): void {
   gameData = getGameDataOnInput(data);
   const gameDataMessage = getGameDataMessage(gameData);
   sendToAllClients(wss.clients, gameDataMessage);
   console.log(gameData);
 }
-
 
 function onConnection(wss: WebSocketServer, ws: WebSocketClient, players: Player[]): void {
   // Create New Player
@@ -46,8 +45,7 @@ function onConnection(wss: WebSocketServer, ws: WebSocketClient, players: Player
   const initMessage = getInitPlayerMessage(player, gameData);
   ws.send(initMessage);
 
-  //
-  ws.on("message", (data) => onClientMessage(wss,data));
+  ws.on("message", (data) => onClientMessage(wss, data));
 
   // Player leaves, delete data from list
   ws.on("close", () => onClose(wss, ws, players));

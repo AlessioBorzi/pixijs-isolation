@@ -56,22 +56,14 @@ app.stage.addChild(checkboard);
 
 // Client
 let player: Player;
-let gameData: GameData = {
-  turn: Turn.PLAYER_0,
-  turnPhase: TurnPhase.MOVE_PAWN,
-  positionPawn: [
-    [0, 2],
-    [7, 3],
-  ],
-  checkboard: Array(CHECKBOARD_HEIGHT).fill(Array(CHECKBOARD_WIDTH).fill(false)),
-};
+let gameData: GameData;
 
 // Move Pawn Phase
 
 function checkPawnAdjacentBoxes(pawn: Pawn, waitForMove: boolean): void {
   for (const pawnAdjacent of pawn.adjacent) {
     const b = boxes[pawnAdjacent[1]][pawnAdjacent[0]];
-    if (!b.removed) {
+    if (!b.removed && !equalArray(pawnAdjacent, gameData.positionPawn[0]) && !equalArray(pawnAdjacent, gameData.positionPawn[1])) {
       b.waitForMove = waitForMove;
       b.update(pawn.onMove);
     }
@@ -149,7 +141,7 @@ function removeBoxPhase(i: number): void {
 }
 
 function updateCheckboard(gameData: GameData): void {
-  for (let i of [0,1]) {
+  for (let i of [0, 1]) {
     const pawn = pawns[i];
     [pawn.x, pawn.y] = gameData.positionPawn[i];
     pawn.updatePosition();
@@ -165,11 +157,13 @@ function updateCheckboard(gameData: GameData): void {
 
 function sendGameData(gameData: GameData): void {
   console.log("I am sending a message to the server");
-  ws.send(JSON.stringify({
-    type: "GAME_DATA",
-    timestamp: Date.now(),
-    gameData,
-  }));
+  ws.send(
+    JSON.stringify({
+      type: messageType.GAME_DATA,
+      timestamp: Date.now(),
+      gameData,
+    }),
+  );
 }
 
 ws.onmessage = (signal) => {
