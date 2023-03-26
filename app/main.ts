@@ -1,13 +1,13 @@
 import "./css/style.css";
 
-import { Pawn, pawnOnClick } from "./game/models/pawn";
-import { Box, BLOCK_DIMENSION, PADDING } from "./game/models/box";
 import { Application, Container } from "pixi.js";
 import { CHECKBOARD_HEIGHT, CHECKBOARD_WIDTH } from "../shared/checkboard.model";
-import { Turn, TurnPhase } from "../shared/turn.model";
-import { messageType } from "../shared/message.model";
 import { GameData } from "../shared/gameData.model";
+import { messageType } from "../shared/message.model";
 import { Player } from "../shared/player.model";
+import { Turn, TurnPhase } from "../shared/turn.model";
+import { BLOCK_DIMENSION, Box, PADDING } from "./game/models/box";
+import { Pawn } from "./game/models/pawn";
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
