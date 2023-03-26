@@ -141,14 +141,14 @@ function removeBoxPhase(i: number): void {
 }
 
 function updateCheckboard(gameData: GameData): void {
-  for (let i of [0, 1]) {
+  for (const i of [0, 1]) {
     const pawn = pawns[i];
     [pawn.x, pawn.y] = gameData.positionPawn[i];
     pawn.updatePosition();
   }
   for (let i = 0; i < CHECKBOARD_WIDTH; i++) {
     for (let j = 0; j < CHECKBOARD_HEIGHT; j++) {
-      let b = boxes[j][i];
+      const b = boxes[j][i];
       b.removed = gameData.checkboard[j][i];
       b.update(b.sprite.interactive);
     }
@@ -166,7 +166,7 @@ function sendGameData(gameData: GameData): void {
   );
 }
 
-ws.onmessage = (signal) => {
+ws.onmessage = (signal: MessageEvent<string>) => {
   const message = JSON.parse(signal.data);
   switch (message.type) {
     case messageType.INIT:
