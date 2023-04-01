@@ -2,7 +2,7 @@ import "./css/style.css";
 
 import { Application, Container } from "pixi.js";
 import { CHECKBOARD_HEIGHT, CHECKBOARD_WIDTH } from "../shared/checkboard.model";
-import { GameData } from "../shared/gameData.model";
+import { GameData, WinCondition } from "../shared/gameData.model";
 import { messageType } from "../shared/message.model";
 import { Player } from "../shared/player.model";
 import { Turn, TurnPhase } from "../shared/turn.model";
@@ -166,6 +166,32 @@ function sendGameData(gameData: GameData): void {
   );
 }
 
+// Win condition
+
+function canPawnMove(pawn: Pawn): boolean {
+  if (!(gameData?.positionPawn == undefined)) {
+    let flag = false;
+    for (const pawnAdjacent of pawn.adjacent) {
+      const b = boxes[pawnAdjacent[1]][pawnAdjacent[0]];
+      if (!b.removed && !equalArray(pawnAdjacent, gameData.positionPawn[0]) && !equalArray(pawnAdjacent, gameData.positionPawn[1])) {
+        flag = true;
+      }
+    }
+    return flag;
+  }
+  return true;
+}
+
+function getWinCondition(): WinCondition {
+  if (!canPawnMove(pawns[0]) && gameData.turn === Turn.PLAYER_0) {
+    return WinCondition.PLAYER_1_WON;
+  } else if (!canPawnMove(pawns[1]) && gameData.turn === Turn.PLAYER_1) {
+    return WinCondition.PLAYER_0_WON;
+  } else {
+    return WinCondition.FALSE;
+  }
+}
+
 ws.onmessage = (signal: MessageEvent<string>) => {
   const message = JSON.parse(signal.data);
   switch (message.type) {
@@ -188,6 +214,16 @@ ws.onmessage = (signal: MessageEvent<string>) => {
 
 app.ticker.add(() => {
   //console.log("idPlayer: " + idPlayer + "\nturn: " + turn + "\nturnPhase: " + turnPhase + "\nisPlayerSpectator: " + isPlayerSpectator)
+
+  const winCondition = getWinCondition();
+  if (winCondition == WinCondition.PLAYER_0_WON) {
+    // Player 0 won
+    console.log("Player 1 won");
+  }
+  if ((winCondition == WinCondition.PLAYER_1_WON)) {
+    // Player 1 won
+    console.log("Player 2 won");
+  }
 
   const isFirstPlayerTurn = player?.id === 0 && gameData.turn === Turn.PLAYER_0;
   const isSecondPlayerTurn = player?.id === 1 && gameData.turn === Turn.PLAYER_1;

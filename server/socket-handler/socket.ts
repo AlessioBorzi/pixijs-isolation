@@ -1,6 +1,6 @@
 import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@v0.1.4/mod.ts";
 import { CHECKBOARD_HEIGHT, CHECKBOARD_WIDTH } from "../../shared/checkboard.model.ts";
-import { GameData } from "../../shared/gameData.model.ts";
+import { GameData, WinCondition } from "../../shared/gameData.model.ts";
 import { Player } from "../../shared/player.model.ts";
 import { Turn, TurnPhase } from "../../shared/turn.model.ts";
 import { createPlayer } from "../player/player.ts";
@@ -17,6 +17,7 @@ let gameData: GameData = {
     [7, 3],
   ],
   checkboard: Array(CHECKBOARD_HEIGHT).fill(Array(CHECKBOARD_WIDTH).fill(false)),
+  winCondition: WinCondition.FALSE,
 };
 
 const wss: WebSocketServer = new WebSocketServer(3010);
