@@ -13,17 +13,18 @@ export class Pawn {
   onMove: boolean;
 
   constructor(id: boolean) {
-    // If the paws is of the first player, put it on (0,2), otherwise (7,3)
+    // If the pawn is of the first player, put it on (0,2), otherwise (7,3)
     if (!id) {
       this.x = 0;
       this.y = 2;
+      this.sprite = Sprite.from("assets/images/pawnRed.png");
     } else {
       this.x = 7;
       this.y = 3;
+      this.sprite = Sprite.from("assets/images/pawnBlue.png");
     }
 
     this.onMove = false;
-    this.sprite = Sprite.from("assets/images/rocket.png");
     this.sprite.height = BLOCK_DIMENSION;
     this.sprite.width = BLOCK_DIMENSION;
     this.sprite.on("pointertap", () => pawnOnClick(this));

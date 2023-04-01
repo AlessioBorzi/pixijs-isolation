@@ -30,7 +30,7 @@ function onClientMessage(wss: WebSocketServer, data: string): void {
   gameData = getGameDataOnInput(data);
   const gameDataMessage = getGameDataMessage(gameData);
   sendToAllClients(wss.clients, gameDataMessage);
-  console.log(gameData);
+  // console.log(gameData);
 }
 
 function onConnection(wss: WebSocketServer, ws: WebSocketClient, players: Player[]): void {
@@ -39,7 +39,7 @@ function onConnection(wss: WebSocketServer, ws: WebSocketClient, players: Player
   const player = createPlayer(id);
   players.push(player);
   ws.id = player.id;
-  console.log(players);
+  // console.log(players);
 
   // Send init data to client
   const initMessage = getInitPlayerMessage(player, gameData);
