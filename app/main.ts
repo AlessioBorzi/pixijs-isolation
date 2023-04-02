@@ -185,11 +185,13 @@ function canPawnMove(pawn: Pawn): boolean {
 function getWinCondition(): WinCondition {
   if (!canPawnMove(pawns[0]) && gameData.turn === Turn.PLAYER_0) {
     return WinCondition.PLAYER_1_WON;
-  } else if (!canPawnMove(pawns[1]) && gameData.turn === Turn.PLAYER_1) {
-    return WinCondition.PLAYER_0_WON;
-  } else {
-    return WinCondition.FALSE;
   }
+  
+  if (!canPawnMove(pawns[1]) && gameData.turn === Turn.PLAYER_1) {
+    return WinCondition.PLAYER_0_WON;
+  }
+  
+  return WinCondition.FALSE;
 }
 
 ws.onmessage = (signal: MessageEvent<string>) => {
