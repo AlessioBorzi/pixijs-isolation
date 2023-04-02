@@ -222,7 +222,7 @@ app.ticker.add(() => {
     // Player 0 won
     console.log("Player 1 won");
   }
-  if ((winCondition == WinCondition.PLAYER_1_WON)) {
+  else if ((winCondition == WinCondition.PLAYER_1_WON)) {
     // Player 1 won
     console.log("Player 2 won");
   }
