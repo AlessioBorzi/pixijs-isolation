@@ -169,7 +169,7 @@ function sendGameData(gameData: GameData): void {
 // Win condition
 
 function canPawnMove(pawn: Pawn): boolean {
-  if (!(gameData?.positionPawn == undefined)) {
+  if (gameData?.positionPawn != undefined) {
     let flag = false;
     for (const pawnAdjacent of pawn.adjacent) {
       const b = boxes[pawnAdjacent[1]][pawnAdjacent[0]];
