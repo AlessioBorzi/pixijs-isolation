@@ -170,14 +170,13 @@ function sendGameData(gameData: GameData): void {
 
 function canPawnMove(pawn: Pawn): boolean {
   if (!(gameData?.positionPawn == undefined)) {
-    let flag = false;
     for (const pawnAdjacent of pawn.adjacent) {
       const b = boxes[pawnAdjacent[1]][pawnAdjacent[0]];
       if (!b.removed && !equalArray(pawnAdjacent, gameData.positionPawn[0]) && !equalArray(pawnAdjacent, gameData.positionPawn[1])) {
-        flag = true;
+        return true;
       }
     }
-    return flag;
+    return false;
   }
   return true;
 }
@@ -188,7 +187,7 @@ function getWinCondition(): WinCondition {
   } else if (!canPawnMove(pawns[1]) && gameData.turn === Turn.PLAYER_1) {
     return WinCondition.PLAYER_0_WON;
   } else {
-    return WinCondition.FALSE;
+    return WinCondition.NO_ONE;
   }
 }
 

@@ -17,7 +17,7 @@ let gameData: GameData = {
     [7, 3],
   ],
   checkboard: Array(CHECKBOARD_HEIGHT).fill(Array(CHECKBOARD_WIDTH).fill(false)),
-  winCondition: WinCondition.FALSE,
+  winCondition: WinCondition.NO_ONE,
 };
 
 const wss: WebSocketServer = new WebSocketServer(3010);
