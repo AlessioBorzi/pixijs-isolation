@@ -1,6 +1,6 @@
 import "./css/style.css";
 
-import { Application, Container } from "pixi.js";
+import { Application, Container, Text, TextStyle, Graphics } from "pixi.js";
 import { CHECKBOARD_HEIGHT, CHECKBOARD_WIDTH } from "../shared/checkboard.model";
 import { GameData, WinCondition } from "../shared/gameData.model";
 import { messageType } from "../shared/message.model";
@@ -193,6 +193,47 @@ function getWinCondition(): WinCondition {
   return WinCondition.NO_ONE;
 }
 
+function winMenu(winCondition: WinCondition): void {
+  if (winCondition != WinCondition.NO_ONE) {
+
+    // Create text "Player x won"
+    const playerWonText = new Text("");
+
+    if (winCondition == WinCondition.PLAYER_0_WON) {
+      playerWonText.text = "Player 1 won!";
+    } else{
+      playerWonText.text = "Player 2 won!";
+    }
+
+    const textStyle = new TextStyle({
+      fontFamily: 'Arial',
+      fontSize: 64,
+      // fontStyle: 'italic',
+      fontWeight: 'bold',
+      fill: ['#ffffff'],
+      stroke: '#4a1850',
+      strokeThickness: 3,
+    });
+
+    playerWonText.style = textStyle;
+    playerWonText.x = app.screen.width / 2;
+    playerWonText.y = app.screen.height / 2;
+    playerWonText.pivot.x = playerWonText.x / 2;
+    playerWonText.pivot.y = playerWonText.y / 2;
+
+    // Create button "New game"
+    //const newGameButton =
+
+    const greyBackground = new Graphics();
+    greyBackground.beginFill(0xbbbbbb, 0.8);
+    greyBackground.drawRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    greyBackground.endFill();
+
+    app.stage.addChild(greyBackground);
+    app.stage.addChild(playerWonText);
+  }
+}
+
 ws.onmessage = (signal: MessageEvent<string>) => {
   const message = JSON.parse(signal.data);
   switch (message.type) {
@@ -217,6 +258,7 @@ app.ticker.add(() => {
   //console.log("idPlayer: " + idPlayer + "\nturn: " + turn + "\nturnPhase: " + turnPhase + "\nisPlayerSpectator: " + isPlayerSpectator)
 
   const winCondition = getWinCondition();
+  winMenu(winCondition);
   if (winCondition == WinCondition.PLAYER_0_WON) {
     // Player 0 won
     console.log("Player 1 won");
