@@ -4,5 +4,19 @@
     <meta charset="utf-8" />
     <title>Isolation</title>
   </head>
-  <body></body>
+  <body>
+    <style>
+      canvas {
+        display: none;
+        margin: 0 auto;
+      }
+    </style>
+    <script>
+      function showCheckBoard() {
+        document.querySelector("canvas").style.display = "block";
+      }
+    </script>
+    <button onclick="showCheckBoard()">Create party</button>
+    <button onclick="showCheckBoard()">Join party</button>
+  </body>
 </html>

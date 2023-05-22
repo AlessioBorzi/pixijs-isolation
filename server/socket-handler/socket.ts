@@ -1,22 +1,14 @@
 import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@v0.1.4/mod.ts";
-import { CHECKBOARD_HEIGHT, CHECKBOARD_WIDTH } from "../../shared/checkboard.model.ts";
-import { GameData } from "../../shared/gameData.model.ts";
+import { MultiGameData } from "../../shared/gameData.model.ts";
 import { Player } from "../../shared/player.model.ts";
-import { Turn, TurnPhase } from "../../shared/turn.model.ts";
 import { createPlayer } from "../player/player.ts";
-import { getAvailableId, getGameDataOnInput, onClose, onConnection, sendToAllClients } from "./communication.ts";
+import { getAvailableId, getGameDataOnInput, onClose, onConnection, sendToAllClients, initGameData } from "./communication.ts";
 import { getGameDataMessage, getInitPlayerMessage, getPlayersMessage } from "./messages.ts";
 
 // Global variables
 const players: Player[] = [];
-let gameData: GameData = {
-  turn: Turn.PLAYER_0,
-  turnPhase: TurnPhase.MOVE_PAWN,
-  positionPawn: [
-    [0, 2],
-    [7, 3],
-  ],
-  checkboard: Array(CHECKBOARD_HEIGHT).fill(Array(CHECKBOARD_WIDTH).fill(false)),
+let multiGameData: MultiGameData = {
+  test: initGameData(),
 };
 
 const wss: WebSocketServer = new WebSocketServer(3010);
@@ -27,10 +19,10 @@ setInterval(() => {
 }, 100);
 
 function onClientMessage(wss: WebSocketServer, data: string): void {
-  gameData = getGameDataOnInput(data);
-  const gameDataMessage = getGameDataMessage(gameData);
+  multiGameData["test"] = getGameDataOnInput(data);
+  const gameDataMessage = getGameDataMessage(multiGameData["test"]);
   sendToAllClients(wss.clients, gameDataMessage);
-  console.log(gameData);
+  console.log(multiGameData["test"]);
 }
 
 function onConnection(wss: WebSocketServer, ws: WebSocketClient, players: Player[]): void {
@@ -42,7 +34,7 @@ function onConnection(wss: WebSocketServer, ws: WebSocketClient, players: Player
   console.log(players);
 
   // Send init data to client
-  const initMessage = getInitPlayerMessage(player, gameData);
+  const initMessage = getInitPlayerMessage(player, multiGameData["test"]);
   ws.send(initMessage);
 
   ws.on("message", (data) => onClientMessage(wss, data));
