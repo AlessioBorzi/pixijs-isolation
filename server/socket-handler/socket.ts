@@ -2,7 +2,7 @@ import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@
 import { MultiGameData } from "../../shared/gameData.model.ts";
 import { Player } from "../../shared/player.model.ts";
 import { createPlayer } from "../player/player.ts";
-import { getAvailableId, getGameDataOnInput, onClose, onConnection, sendToAllClients, initGameData } from "./communication.ts";
+import { getAvailableId, getGameDataOnInput, initGameData, onClose, onConnection, sendToAllClients } from "./communication.ts";
 import { getGameDataMessage, getInitPlayerMessage, getPlayersMessage } from "./messages.ts";
 
 // Global variables
@@ -31,7 +31,7 @@ function onConnection(wss: WebSocketServer, ws: WebSocketClient, players: Player
   const player = createPlayer(id);
   players.push(player);
   ws.id = player.id;
-  console.log(players);
+  // console.log(players);
 
   // Send init data to client
   const initMessage = getInitPlayerMessage(player, multiGameData["test"]);

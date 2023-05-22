@@ -1,11 +1,10 @@
 import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@v0.1.4/mod.ts";
-import { GameData } from "../../shared/gameData.model.ts";
-import { Player } from "../../shared/player.model.ts";
-import { compareId } from "./helper.ts";
 import { CHECKBOARD_HEIGHT, CHECKBOARD_WIDTH } from "../../shared/checkboard.model.ts";
-import { Turn, TurnPhase } from "../../shared/turn.model.ts";
-import { MultiGameData } from "../../shared/gameData.model.ts";
+import { GameData, MultiGameData, WinCondition } from "../../shared/gameData.model.ts";
 import { generateRandomKey } from "../../shared/helper.ts";
+import { Player } from "../../shared/player.model.ts";
+import { Turn, TurnPhase } from "../../shared/turn.model.ts";
+import { compareId } from "./helper.ts";
 
 export function sendToAllClients(clients: WebSocketClient[], data: string): void {
   for (const client of clients) {
@@ -51,6 +50,7 @@ export function initGameData(): GameData {
       [7, 3],
     ],
     checkboard: Array(CHECKBOARD_HEIGHT).fill(Array(CHECKBOARD_WIDTH).fill(false)),
+    winCondition: WinCondition.NO_ONE,
   };
 }
 
