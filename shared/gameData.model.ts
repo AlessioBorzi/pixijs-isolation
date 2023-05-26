@@ -6,6 +6,7 @@ export interface MultiGameData {
 }
 
 export interface GameData {
+  roomKey: string;
   turn: Turn;
   turnPhase: TurnPhase;
   positionPawn: number[][];

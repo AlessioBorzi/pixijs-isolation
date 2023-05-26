@@ -166,6 +166,17 @@ function sendGameData(gameData: GameData): void {
   );
 }
 
+function createParty(): void {
+  console.log("I am sending a message to the server requesting a party room");
+  ws.send(
+    JSON.stringify({
+      type: messageType.CREATE_PARTY,
+      timestamp: Date.now(),
+      gameData,
+    }),
+  );
+}
+
 // Win condition
 
 function canPawnMove(pawn: Pawn): boolean {
@@ -176,8 +187,10 @@ function canPawnMove(pawn: Pawn): boolean {
         return true;
       }
     }
+
     return false;
   }
+
   return true;
 }
 
@@ -195,23 +208,22 @@ function getWinCondition(): WinCondition {
 
 function winMenu(winCondition: WinCondition): void {
   if (winCondition != WinCondition.NO_ONE) {
-
     // Create text "Player x won"
     const playerWonText = new Text("");
 
     if (winCondition == WinCondition.PLAYER_0_WON) {
       playerWonText.text = "Player 1 won!";
-    } else{
+    } else {
       playerWonText.text = "Player 2 won!";
     }
 
     const textStyle = new TextStyle({
-      fontFamily: 'Arial',
+      fontFamily: "Arial",
       fontSize: 64,
       // fontStyle: 'italic',
-      fontWeight: 'bold',
-      fill: ['#ffffff'],
-      stroke: '#4a1850',
+      fontWeight: "bold",
+      fill: ["#ffffff"],
+      stroke: "#4a1850",
       strokeThickness: 3,
     });
 
@@ -248,6 +260,9 @@ ws.onmessage = (signal: MessageEvent<string>) => {
       updateCheckboard(gameData);
       break;
     case messageType.PLAYERS:
+    case messageType.CREATE_PARTY:
+      break;
+    case messageType.PARTY_KEY:
       break;
     default:
       break;
@@ -262,8 +277,7 @@ app.ticker.add(() => {
   if (winCondition == WinCondition.PLAYER_0_WON) {
     // Player 0 won
     console.log("Player 1 won");
-  }
-  else if (winCondition == WinCondition.PLAYER_1_WON) {
+  } else if (winCondition == WinCondition.PLAYER_1_WON) {
     // Player 1 won
     console.log("Player 2 won");
   }

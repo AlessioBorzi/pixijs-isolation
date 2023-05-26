@@ -14,6 +14,7 @@ export function sendToAllClients(clients: WebSocketClient[], data: string): void
 
 export function getGameDataOnInput(data: string): GameData {
   const message = JSON.parse(data);
+  console.log("message", message);
   return message.gameData;
 }
 
@@ -43,6 +44,7 @@ export function onClose(wss: WebSocketServer, ws: WebSocketClient, players: Play
 
 export function initGameData(): GameData {
   return {
+    roomKey: "",
     turn: Turn.PLAYER_0,
     turnPhase: TurnPhase.MOVE_PAWN,
     positionPawn: [
@@ -54,10 +56,10 @@ export function initGameData(): GameData {
   };
 }
 
-export function generatePartyKey(multiGameData: MultiGameData): string {
+export function generatePartyKey(partyKeys: string[]): string {
   let key = generateRandomKey();
 
-  while (key in multiGameData) {
+  while (partyKeys.includes(key)) {
     // while key already exists
     key = generateRandomKey();
   }

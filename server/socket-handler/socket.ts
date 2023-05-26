@@ -7,7 +7,7 @@ import { getGameDataMessage, getInitPlayerMessage, getPlayersMessage } from "./m
 
 // Global variables
 const players: Player[] = [];
-let multiGameData: MultiGameData = {
+const multiGameData: MultiGameData = {
   test: initGameData(),
 };
 
@@ -19,6 +19,7 @@ setInterval(() => {
 }, 100);
 
 function onClientMessage(wss: WebSocketServer, data: string): void {
+  // "test" =  generatePartyKey()
   multiGameData["test"] = getGameDataOnInput(data);
   const gameDataMessage = getGameDataMessage(multiGameData["test"]);
   sendToAllClients(wss.clients, gameDataMessage);
