@@ -1,6 +1,6 @@
 import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@v0.1.4/mod.ts";
 import { CHECKBOARD_HEIGHT, CHECKBOARD_WIDTH } from "../../shared/checkboard.model.ts";
-import { GameData, MultiGameData, WinCondition } from "../../shared/gameData.model.ts";
+import { GameData, MessageData, WinCondition } from "../../shared/gameData.model.ts";
 import { generateRandomKey } from "../../shared/helper.ts";
 import { Player } from "../../shared/player.model.ts";
 import { Turn, TurnPhase } from "../../shared/turn.model.ts";
@@ -12,10 +12,9 @@ export function sendToAllClients(clients: WebSocketClient[], data: string): void
   }
 }
 
-export function getGameDataOnInput(data: string): GameData {
+export function getDataOnInput(data: string): MessageData {
   const message = JSON.parse(data);
-  console.log("message", message);
-  return message.gameData;
+  return message;
 }
 
 export function getAvailableId(players: Player[]): number {
@@ -66,3 +65,5 @@ export function generatePartyKey(partyKeys: string[]): string {
 
   return key;
 }
+
+// TODO: delete roomKey after 2 hours (check GameData timestamp)

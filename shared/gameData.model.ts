@@ -1,8 +1,16 @@
 // @ts-ignore
-import { Turn, TurnPhase } from "./turn.model.ts";
+import { messageType } from "../shared/message.model.ts";
+// @ts-ignore
+import { Turn, TurnPhase } from "../shared/turn.model.ts";
 
 export interface MultiGameData {
   [key: string]: GameData;
+}
+
+export interface MessageData {
+  type: messageType;
+  timestamp: number;
+  gameData: GameData;
 }
 
 export interface GameData {

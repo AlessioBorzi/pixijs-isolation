@@ -1,14 +1,15 @@
 import { WebSocketClient, WebSocketServer } from "https://deno.land/x/websocket@v0.1.4/mod.ts";
-import { MultiGameData } from "../../shared/gameData.model.ts";
+import { GameData, MultiGameData } from "../../shared/gameData.model.ts";
+import { messageType } from "../../shared/message.model.ts";
 import { Player } from "../../shared/player.model.ts";
 import { createPlayer } from "../player/player.ts";
-import { getAvailableId, getGameDataOnInput, initGameData, onClose, onConnection, sendToAllClients } from "./communication.ts";
+import { generatePartyKey, getAvailableId, getDataOnInput, initGameData, onClose, sendToAllClients } from "./communication.ts";
 import { getGameDataMessage, getInitPlayerMessage, getPlayersMessage } from "./messages.ts";
 
 // Global variables
 const players: Player[] = [];
 const multiGameData: MultiGameData = {
-  test: initGameData(),
+  test: initGameData(), // TODO
 };
 
 const wss: WebSocketServer = new WebSocketServer(3010);
@@ -20,10 +21,22 @@ setInterval(() => {
 
 function onClientMessage(wss: WebSocketServer, data: string): void {
   // "test" =  generatePartyKey()
-  multiGameData["test"] = getGameDataOnInput(data);
+  const messageData = getDataOnInput(data);
+  multiGameData["test"] = messageData.gameData;
+
   const gameDataMessage = getGameDataMessage(multiGameData["test"]);
   sendToAllClients(wss.clients, gameDataMessage);
-  console.log(multiGameData["test"]);
+  console.log("TYPE: ", messageData.type);
+  switch (messageData.type) {
+    case messageType.CREATE_PARTY:
+      console.log("PARTY: ", multiGameData["test"]);
+      const currentPartyKeys = Object.keys(multiGameData).map((key) => multiGameData[key].roomKey);
+      const newRoomKey = generatePartyKey(currentPartyKeys);
+      multiGameData[newRoomKey] = {} as GameData;
+      console.log("newRoomKey", newRoomKey);
+      console.log("multiGameData", multiGameData);
+      break;
+  }
 }
 
 function onConnection(wss: WebSocketServer, ws: WebSocketClient, players: Player[]): void {
@@ -35,7 +48,7 @@ function onConnection(wss: WebSocketServer, ws: WebSocketClient, players: Player
   // console.log(players);
 
   // Send init data to client
-  const initMessage = getInitPlayerMessage(player, multiGameData["test"]);
+  const initMessage = getInitPlayerMessage(player, multiGameData["test"]); // TODO
   ws.send(initMessage);
 
   ws.on("message", (data) => onClientMessage(wss, data));
