@@ -1,6 +1,6 @@
 import "./css/style.css";
 
-import { Application, Container, Text, TextStyle, Graphics } from "pixi.js";
+import { Application, Container, Graphics, Text, TextStyle } from "pixi.js";
 import { CHECKBOARD_HEIGHT, CHECKBOARD_WIDTH } from "../shared/checkboard.model";
 import { GameData, WinCondition } from "../shared/gameData.model";
 import { messageType } from "../shared/message.model";
@@ -166,6 +166,17 @@ function sendGameData(gameData: GameData): void {
   );
 }
 
+function createParty(): void {
+  console.log("I am sending a message to the server requesting a party room");
+  ws.send(
+    JSON.stringify({
+      type: messageType.CREATE_PARTY,
+      timestamp: Date.now(),
+      gameData,
+    }),
+  );
+}
+
 // Win condition
 
 function canPawnMove(pawn: Pawn): boolean {
@@ -176,8 +187,10 @@ function canPawnMove(pawn: Pawn): boolean {
         return true;
       }
     }
+
     return false;
   }
+
   return true;
 }
 
@@ -195,23 +208,22 @@ function getWinCondition(): WinCondition {
 
 function winMenu(winCondition: WinCondition): void {
   if (winCondition != WinCondition.NO_ONE) {
-
     // Create text "Player x won"
     const playerWonText = new Text("");
 
     if (winCondition == WinCondition.PLAYER_0_WON) {
       playerWonText.text = "Player 1 won!";
-    } else{
+    } else {
       playerWonText.text = "Player 2 won!";
     }
 
     const textStyle = new TextStyle({
-      fontFamily: 'Arial',
+      fontFamily: "Arial",
       fontSize: 64,
       // fontStyle: 'italic',
-      fontWeight: 'bold',
-      fill: ['#ffffff'],
-      stroke: '#4a1850',
+      fontWeight: "bold",
+      fill: ["#ffffff"],
+      stroke: "#4a1850",
       strokeThickness: 3,
     });
 
@@ -242,17 +254,28 @@ ws.onmessage = (signal: MessageEvent<string>) => {
       gameData = message.gameData;
       updateCheckboard(gameData);
       console.log("Player id: " + player.id);
+      gameState = 1;
       break;
+
     case messageType.GAME_DATA:
       gameData = message.gameData;
       updateCheckboard(gameData);
       break;
+
     case messageType.PLAYERS:
+    case messageType.CREATE_PARTY:
       break;
+
+    case messageType.PARTY_KEY:
+      console.log("PARTY KEY", message);
+      break;
+
     default:
       break;
   }
 };
+
+let gameState = 0;
 
 app.ticker.add(() => {
   //console.log("idPlayer: " + idPlayer + "\nturn: " + turn + "\nturnPhase: " + turnPhase + "\nisPlayerSpectator: " + isPlayerSpectator)
@@ -262,8 +285,7 @@ app.ticker.add(() => {
   if (winCondition == WinCondition.PLAYER_0_WON) {
     // Player 0 won
     console.log("Player 1 won");
-  }
-  else if (winCondition == WinCondition.PLAYER_1_WON) {
+  } else if (winCondition == WinCondition.PLAYER_1_WON) {
     // Player 1 won
     console.log("Player 2 won");
   }
@@ -279,5 +301,10 @@ app.ticker.add(() => {
     } else if (gameData.turnPhase === TurnPhase.REMOVE_BOX) {
       removeBoxPhase(playerIndex);
     }
+  }
+
+  if (gameState == 1) {
+    createParty();
+    gameState = 2;
   }
 });

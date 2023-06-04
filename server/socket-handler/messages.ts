@@ -1,6 +1,7 @@
+import { GameData, MultiGameData } from "../../shared/gameData.model.ts";
 import { messageType } from "../../shared/message.model.ts";
 import { Player } from "../../shared/player.model.ts";
-import { Turn, TurnPhase } from '../../shared/turn.model.ts';
+import { generatePartyKey } from "./communication.ts";
 
 export function getInitPlayerMessage(player: Player, gameData: GameData): string {
   return JSON.stringify({
@@ -24,5 +25,13 @@ export function getPlayersMessage(data: Player[]): string {
     type: messageType.PLAYERS,
     timestamp: Date.now(),
     data,
+  });
+}
+
+export function getNewPartyKey(partyKeys: string[]): string {
+  return JSON.stringify({
+    type: messageType.PARTY_KEY,
+    timestamp: Date.now(),
+    data: generatePartyKey(partyKeys),
   });
 }
