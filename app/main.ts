@@ -1,5 +1,6 @@
 import "./css/style.css";
 
+import { Button } from "@pixi/ui";
 import { Application, Container, Graphics, Text, TextStyle } from "pixi.js";
 import { CHECKBOARD_HEIGHT, CHECKBOARD_WIDTH } from "../shared/checkboard.model";
 import { GameData, WinCondition } from "../shared/gameData.model";
@@ -52,7 +53,24 @@ checkboard.y = app.screen.height / 2;
 checkboard.pivot.x = checkboard.width / 2;
 checkboard.pivot.y = checkboard.height / 2;
 
-app.stage.addChild(checkboard);
+console.log("TEST", location.href);
+const url = location.href;
+const isIndex = url.indexOf("room") == -1;
+if (!isIndex) {
+  const partyKey = url.substring(url.indexOf("room"), url.length).replace("room/", "");
+  console.log("partyKey", partyKey);
+  app.stage.addChild(checkboard);
+} else {
+  const container = new Container();
+  const button = new Button(new Graphics().beginFill("ffffff").drawRoundedRect(0, 0, 100, 50, 15));
+
+  button.onPress.connect(() => console.log("onPress"));
+  container.addChild(button.view);
+
+  app.stage.addChild(container);
+
+  console.log("no checkboard");
+}
 
 // Client
 let player: Player;
@@ -248,63 +266,67 @@ function winMenu(winCondition: WinCondition): void {
 
 ws.onmessage = (signal: MessageEvent<string>) => {
   const message = JSON.parse(signal.data);
-  switch (message.type) {
-    case messageType.INIT:
-      player = message.player;
-      gameData = message.gameData;
-      updateCheckboard(gameData);
-      console.log("Player id: " + player.id);
-      gameState = 1;
-      break;
+  if (!isIndex) {
+    switch (message.type) {
+      case messageType.INIT:
+        player = message.player;
+        gameData = message.gameData;
+        updateCheckboard(gameData);
+        console.log("Player id: " + player.id);
+        gameState = 1;
+        break;
 
-    case messageType.GAME_DATA:
-      gameData = message.gameData;
-      updateCheckboard(gameData);
-      break;
+      case messageType.GAME_DATA:
+        gameData = message.gameData;
+        updateCheckboard(gameData);
+        break;
 
-    case messageType.PLAYERS:
-    case messageType.CREATE_PARTY:
-      break;
+      case messageType.PLAYERS:
+      case messageType.CREATE_PARTY:
+        break;
 
-    case messageType.PARTY_KEY:
-      console.log("PARTY KEY", message);
-      break;
+      case messageType.PARTY_KEY:
+        console.log("PARTY KEY", message);
+        break;
 
-    default:
-      break;
+      default:
+        break;
+    }
   }
 };
 
 let gameState = 0;
 
 app.ticker.add(() => {
-  //console.log("idPlayer: " + idPlayer + "\nturn: " + turn + "\nturnPhase: " + turnPhase + "\nisPlayerSpectator: " + isPlayerSpectator)
+  if (!isIndex) {
+    //console.log("idPlayer: " + idPlayer + "\nturn: " + turn + "\nturnPhase: " + turnPhase + "\nisPlayerSpectator: " + isPlayerSpectator)
 
-  const winCondition = getWinCondition();
-  winMenu(winCondition);
-  if (winCondition == WinCondition.PLAYER_0_WON) {
-    // Player 0 won
-    console.log("Player 1 won");
-  } else if (winCondition == WinCondition.PLAYER_1_WON) {
-    // Player 1 won
-    console.log("Player 2 won");
-  }
-
-  const isFirstPlayerTurn = player?.id === 0 && gameData.turn === Turn.PLAYER_0;
-  const isSecondPlayerTurn = player?.id === 1 && gameData.turn === Turn.PLAYER_1;
-
-  if (isFirstPlayerTurn || isSecondPlayerTurn) {
-    const playerIndex = isFirstPlayerTurn ? 0 : 1;
-
-    if (gameData.turnPhase === TurnPhase.MOVE_PAWN) {
-      movePhase(playerIndex);
-    } else if (gameData.turnPhase === TurnPhase.REMOVE_BOX) {
-      removeBoxPhase(playerIndex);
+    const winCondition = getWinCondition();
+    winMenu(winCondition);
+    if (winCondition == WinCondition.PLAYER_0_WON) {
+      // Player 0 won
+      console.log("Player 1 won");
+    } else if (winCondition == WinCondition.PLAYER_1_WON) {
+      // Player 1 won
+      console.log("Player 2 won");
     }
-  }
 
-  if (gameState == 1) {
-    createParty();
-    gameState = 2;
+    const isFirstPlayerTurn = player?.id === 0 && gameData.turn === Turn.PLAYER_0;
+    const isSecondPlayerTurn = player?.id === 1 && gameData.turn === Turn.PLAYER_1;
+
+    if (isFirstPlayerTurn || isSecondPlayerTurn) {
+      const playerIndex = isFirstPlayerTurn ? 0 : 1;
+
+      if (gameData.turnPhase === TurnPhase.MOVE_PAWN) {
+        movePhase(playerIndex);
+      } else if (gameData.turnPhase === TurnPhase.REMOVE_BOX) {
+        removeBoxPhase(playerIndex);
+      }
+    }
+
+    if (gameState == 1) {
+      createParty();
+      gameState = 2;
+    }
   }
 });

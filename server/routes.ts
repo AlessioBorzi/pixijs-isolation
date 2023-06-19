@@ -13,8 +13,7 @@ app.get("/", (req, res) => {
 
 app.get("/room/:partyKey", (req, res) => {
   res.sendFile(resolve(join(__dirname, "../dist/index.html")));
-
-  res.send(req.params);
+  // res.send(req.params);
 });
 
 app.use("/", express.static(join(__dirname, "../dist")));
