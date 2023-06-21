@@ -1,11 +1,12 @@
 import { Sprite, Texture } from "pixi.js";
+import { Cursor, GameSprite } from "./game.model";
 
 export const BLOCK_DIMENSION = 80;
 export const PADDING = 10;
 
 // The checkboard is made of boxes
 export class Box {
-  sprite: Sprite;
+  sprite: GameSprite;
   move: boolean;
   waitForMove: boolean;
   removed: boolean;
@@ -16,7 +17,7 @@ export class Box {
     this.move = false;
     this.removed = false;
     this.justRemoved = false;
-    this.sprite = Sprite.from("assets/images/box.png");
+    this.sprite = Sprite.from("assets/images/box.png") as GameSprite;
     this.sprite.x = 0;
     this.sprite.y = 0;
     this.sprite.height = BLOCK_DIMENSION;
@@ -33,11 +34,11 @@ export class Box {
       if (this.waitForMove) {
         this.sprite.texture = Texture.from("assets/images/boxInteractive.png");
       }
-      this.sprite.cursor = "pointer";
+      this.sprite.cursor = Cursor.POINTER;
     } else {
       const image = this.removed ? "assets/images/boxRemoved.png" : "assets/images/box.png";
       this.sprite.texture = Texture.from(image);
-      this.sprite.cursor = "cursor";
+      this.sprite.cursor = Cursor.DEFAULT;
     }
   }
 

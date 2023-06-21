@@ -20,7 +20,7 @@ const app = new Application({
   height: GAME_HEIGHT,
 });
 
-document.body.appendChild(app.view);
+document.body.appendChild(app.view as HTMLCanvasElement);
 
 // WebSocket
 const ws = new WebSocket(`ws://${window.location.hostname}:3010`);

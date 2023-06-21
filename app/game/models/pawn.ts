@@ -1,5 +1,6 @@
 import { Sprite } from "pixi.js";
 import { BLOCK_DIMENSION, PADDING } from "./box";
+import { Cursor, GameSprite } from "./game.model";
 
 const CHECKBOARD_HEIGHT = 6;
 const CHECKBOARD_WIDTH = 8;
@@ -8,7 +9,7 @@ const CHECKBOARD_WIDTH = 8;
 export class Pawn {
   x: number;
   y: number;
-  sprite: Sprite;
+  sprite: GameSprite;
   adjacent: number[][];
   onMove: boolean;
 
@@ -17,11 +18,11 @@ export class Pawn {
     if (!id) {
       this.x = 0;
       this.y = 2;
-      this.sprite = Sprite.from("assets/images/pawnRed.png");
+      this.sprite = Sprite.from("assets/images/pawnRed.png") as GameSprite;
     } else {
       this.x = 7;
       this.y = 3;
-      this.sprite = Sprite.from("assets/images/pawnBlue.png");
+      this.sprite = Sprite.from("assets/images/pawnBlue.png") as GameSprite;
     }
 
     this.onMove = false;
@@ -31,12 +32,12 @@ export class Pawn {
 
     this.updatePosition();
 
-    return this;
+    return this; // is necessary?
   }
 
   makePawnInteractive(interactive: boolean): void {
     this.sprite.interactive = interactive;
-    this.sprite.cursor = interactive ? "pointer" : "cursor";
+    this.sprite.cursor = interactive ? Cursor.POINTER : Cursor.DEFAULT;
   }
 
   updatePosition(): void {
